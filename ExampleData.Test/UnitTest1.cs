@@ -90,6 +90,8 @@ namespace ExampleData.Test
                     .Select(x => new ArtistViewModel(context, x));
 
                 var Result = it2.ToArray();
+
+                //Hola
             }
         }
 
