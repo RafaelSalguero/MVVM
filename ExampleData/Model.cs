@@ -13,9 +13,11 @@ using System.Data.SQLite.EF6;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PropertyChanged;
 using Tonic.EF;
 namespace ExampleData
 {
+    [ImplementPropertyChanged]
     public class Artist
     {
         public Artist()
@@ -31,6 +33,7 @@ namespace ExampleData
         public virtual ICollection<Album> Albums { get; set; }
     }
 
+    [ImplementPropertyChanged]
     public class Album
     {
         public Album()

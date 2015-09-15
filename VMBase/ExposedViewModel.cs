@@ -28,6 +28,8 @@ namespace Tonic.MVVM
 
                 modelProps.Add(P.Name, P);
             }
+
+            this.PropertyChanged += (a, b) => UpdateErrors();
         }
 
 
@@ -81,12 +83,12 @@ namespace Tonic.MVVM
                     var LastValue = P.GetValue(model);
                     if (!object.Equals(LastValue, value))
                     {
-                        //Si es asi, establece la propiedad y dispara la notificacion de propiedad
+                        //Si es asi, establece la propiedad
                         P.SetValue(model, value);
-                        RaisePropertyChanged(P.Name);
 
-                        //Actualiza los errores, solo aplica si el modelo implementa IDataErrorInfo
-                        UpdateErrors();
+                        //La notificacion de propiedades la debe de implementar el modelo
+                        //Al asignar la propiedad Model, si la nueva instancia implementa INotifyPropertyChanged, esta clase se subscribe al evento PropertyChanged
+                        //Al deteectar cambios de propiedad tambien se actualizan los errores
                     }
                     return true;
                 }
@@ -125,7 +127,7 @@ namespace Tonic.MVVM
             return ret;
         }
 
-        
+
         #endregion
     }
 }

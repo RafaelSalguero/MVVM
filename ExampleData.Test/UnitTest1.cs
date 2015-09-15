@@ -23,6 +23,7 @@ namespace ExampleData.Test
                     return GetCollection(nameof(Albums), x => new AlbumViewModel(x));
                 }
             }
+
         }
         public class AlbumViewModel : EntityViewModel<Album, ExampleContext>
         {
@@ -73,7 +74,7 @@ namespace ExampleData.Test
                         var Result = it2.ToArray();
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     fail = true;
                 }
@@ -89,9 +90,58 @@ namespace ExampleData.Test
                     .ToClient()
                     .Select(x => new ArtistViewModel(context, x));
 
-                var Result = it2.ToArray();
+                //Query utilizando ToClient y queries en el lado del cliente y del servidor
+                var Result = it2.ToArray().Cast<dynamic>().Select(x => x.Name);
 
-                //Hola
+                //Query completamente en memoria:
+                var R2 = C.Artist.ToList()
+                    .Where(x => x.Name == "Rafael").Select(x => new ArtistViewModel(context, x)).ToArray().Cast<dynamic>().Select(x => x.Name);
+
+                Assert.AreEqual(true, Result.SequenceEqual(R2));
+            }
+
+            //El take se debe de ejecutar en el lado del servidor, aunque este despues del ToClient
+            using (var C = context())
+            {
+                //El where y el take se debe de ejecutar en el lado del servidor, y el ultimo select en el lado del cliente.
+                var it2 = C.Artist
+                    .Where(x => x.Name == "Rafael")
+                    .ToClient()
+                    .Select(x => new ArtistViewModel(context, x))
+                    .Take(1);
+
+                var it3 = C.Artist.Where(x => x.Name == "Rafael").Take(1)
+                    .ToClient()
+                    .Select(x => new ArtistViewModel(context, x));
+
+                //Las tres expresiones tienen la misma representacion de cadena porque el ToString del ServerSideQuery devuelve siempre lo mismo
+                //sin importar su contenido
+
+                //Note que el Take de it2 no afecta porque este es transladado al server side
+                var ex1 = it2.Expression.ToString();
+                var ex2 = C.Artist.ToClient().Select(x => new ArtistViewModel(context, x)).Expression.ToString();
+                var ex3 = it3.Expression.ToString();
+
+                Assert.AreEqual(ex1, ex2);
+                Assert.AreEqual(ex2, ex3);
+
+                var Result1 = it2.ToArray().Cast<dynamic>().Select(x => x.Name);
+                var Result2 = it3.ToArray().Cast<dynamic>().Select(x => x.Name);
+
+                Assert.AreEqual(true, Result1.SequenceEqual(Result2));
+            }
+
+            //Se ejecutara un Count, este se debe de realizar en el lado del servidor
+            using (var C = context())
+            {
+                //El where y el count se debe de ejecutar en el lado del servidor, el último select nunca es ejecutado
+                var it2 = C.Artist
+                    .Where(x => x.Name == "Rafael")
+                    .ToClient()
+                    .Select(x => new ArtistViewModel(context, x))
+                    .Count();
+
+                Assert.AreEqual(C.Artist.Where(x => x.Name == "Rafael").Count(), it2);
             }
         }
 
