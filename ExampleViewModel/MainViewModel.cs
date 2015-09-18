@@ -8,7 +8,7 @@ using Tonic.MVVM;
 
 namespace ExampleViewModel
 {
-    public class MainViewModel : CommandsViewModel
+    public class MainViewModel : CommandsExtension
     {
         #region Dependencies
         readonly IView ViewContainer;

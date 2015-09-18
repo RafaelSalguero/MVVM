@@ -13,14 +13,14 @@ namespace RLinq.Test
             public string Nombre { get; set; }
             public string Apellido { get; set; }
 
-            public static Expression<Func<Artist, string>> exNombreCompleto = x => x.Nombre + " " + x.Apellido;
             public string NombreCompleto
             {
                 get
                 {
-                    return ((Expression<Func<Artist, string>>)(x => x.Nombre)).Execute(this);
+                    return this.Execute(x => x.Nombre + " " + x.Apellido);
                 }
             }
+
         }
 
         public class ArtistViewModel
@@ -33,7 +33,7 @@ namespace RLinq.Test
             public readonly Artist Model;
         }
 
-      
+
         [TestMethod]
         public void RLinqDecompile()
         {
@@ -50,21 +50,16 @@ namespace RLinq.Test
 
             var q1 = it2.Where(ar => ar.NombreCompleto == "Rafael Salguero");
             var q2 = it2.Where(ar => ar.Nombre + " " + ar.Apellido == "Rafael Salguero");
-            var q3 = it2.Where(ar => Artist.exNombreCompleto.Execute(ar) == "Rafael Salguero");
 
             var e1 = q1.Expression.ToString();
             var e2 = q2.Expression.ToString();
-            var e3 = q3.Expression.ToString();
 
             Assert.AreEqual(e1, e2);
-            Assert.AreEqual(e2, e3);
 
             var r1 = q1.ToArray();
             var r2 = q2.ToArray();
-            var r3 = q3.ToArray();
 
             Assert.IsTrue(r1.SequenceEqual(r2));
-            Assert.IsTrue(r2.SequenceEqual(r3));
         }
     }
 }

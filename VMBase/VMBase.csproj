@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Tonic.MVVM.VMBase.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -44,7 +45,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseViewModel.cs" />
-    <Compile Include="CommandsViewModel.cs" />
+    <Compile Include="Extensions\CommandsExtension.cs" />
+    <Compile Include="DynamicExtension.cs" />
+    <Compile Include="Extensions\DynamicExtensionContainer.cs" />
+    <Compile Include="Extensions\ExposedModelExtension.cs" />
     <Compile Include="ExposedViewModel.cs" />
     <Compile Include="IDialogs.cs" />
     <Compile Include="IModel.cs" />

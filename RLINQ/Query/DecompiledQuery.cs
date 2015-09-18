@@ -51,7 +51,6 @@ namespace Tonic
                 return original.ElementType;
             }
         }
-
         public Expression Expression
         {
             get
@@ -64,12 +63,10 @@ namespace Tonic
         {
             get; private set;
         }
-
         public IEnumerator<T> GetEnumerator()
         {
             return original.GetEnumerator();
         }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

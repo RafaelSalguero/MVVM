@@ -24,11 +24,92 @@ namespace ExampleData.Test
                 }
             }
 
+            public Guid ArtistId
+            {
+                get
+                {
+                    return Model.ArtistId;
+                }
+            }
         }
         public class AlbumViewModel : EntityViewModel<Album, ExampleContext>
         {
             public AlbumViewModel(Func<ExampleContext> Context) : base(Context) { }
 
+        }
+
+        [TestMethod]
+        public void PagedQueryIntegrationTest()
+        {
+            var Conn = Effort.DbConnectionFactory.CreateTransient();
+            Func<ExampleContext> context = () => new ExampleContext(Conn);
+
+            //Agrega algunos artistas:
+            Artist Rafa;
+            using (var C = context())
+            {
+                Rafa = new Artist { Name = "Alejandra" };
+                C.Artist.Add(Rafa);
+
+                Rafa = new Artist { Name = "Alejandra" };
+                C.Artist.Add(Rafa);
+
+                Rafa = new Artist { Name = "Rafael" };
+                C.Artist.Add(Rafa);
+
+                Rafa = new Artist { Name = "Rafael" };
+                C.Artist.Add(Rafa);
+
+                Rafa = new Artist { Name = "Rafael" };
+                C.Artist.Add(Rafa);
+
+                Rafa = new Artist { Name = "Rafael" };
+                C.Artist.Add(Rafa);
+                C.SaveChanges();
+            };
+
+
+            //Este query debe de funcionar porque se ejecuta en dos partes
+            using (var C = context())
+            {
+                bool hit = false;
+                var hitCall = C.Database.Log += e => hit = true;
+
+                //El where se debe de ejecutar en el lado del servidor, y el ultimo select en el lado del cliente
+                var it2 = C.Artist
+                    .Where(x => x.Name == "Rafael")
+                    .OrderBy(x => x.Name)
+                    .ToClient()
+                    .Select(x => new ArtistViewModel(context, x));
+
+                var r2 = it2.ToArray();
+                var PagedQuery = Tonic.Patterns.PagedQuery.QueryFactory.Create(it2, 3, 1);
+
+                //La primera lectura debe de ocasionar una operacion de la base de datos
+                var ar1 = ((IList<ArtistViewModel>)PagedQuery)[0];
+                Assert.AreEqual(true, hit);
+
+                hit = false;
+
+                //La segunda lectura no ocasiona una operacion, pues la pagina de tamaño 3 ya lo tiene
+                var ar2 = ((IList<ArtistViewModel>)PagedQuery)[1];
+                Assert.AreEqual(false, hit);
+
+                //La tercera lectura tambien se encuentra ya en memoria
+                var ar3 = ((IList<ArtistViewModel>)PagedQuery)[2];
+                Assert.AreEqual(false, hit);
+
+                //La cuarta lectura tambien se encuentra fuera de la pagina, asi que si ocasiona una operacion de la base de datos
+                var ar4 = ((IList<ArtistViewModel>)PagedQuery)[3];
+                Assert.AreEqual(true, hit);
+
+
+                //Verifica que los elementos sean los correctos:
+                Assert.AreEqual(ar1.ArtistId, r2[0].ArtistId);
+                Assert.AreEqual(ar2.ArtistId, r2[1].ArtistId);
+                Assert.AreEqual(ar3.ArtistId, r2[2].ArtistId);
+                Assert.AreEqual(ar4.ArtistId, r2[3].ArtistId);
+            }
         }
 
         [TestMethod]

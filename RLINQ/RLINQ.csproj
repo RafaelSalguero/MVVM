@@ -31,14 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AshMind.Extensions, Version=1.0.4.0, Culture=neutral, PublicKeyToken=32a35e6126a2a893, processorArchitecture=MSIL">
-      <HintPath>..\packages\AshMind.Extensions.1.0.4\lib\3.5\AshMind.Extensions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Expressive, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Expressive.0.6\lib\net35\Expressive.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClientServer.cs" />
+    <Compile Include="MethodDecompiler.cs" />
     <Compile Include="Query\ClientServerQuery.cs" />
     <Compile Include="Query\DecompiledQuery.cs" />
     <Compile Include="DecompilerVisitor.cs" />
@@ -57,9 +49,6 @@
     <Compile Include="ReplaceVisitor.cs" />
     <Compile Include="RLinq.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

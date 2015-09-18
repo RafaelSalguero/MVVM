@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Tonic
 {
+
+
     /// <summary>
     /// Provides extension methods for decompiling expression trees and IQueryables
     /// </summary>
@@ -14,6 +16,17 @@ namespace Tonic
     {
         [ThreadStatic]
         private static Dictionary<LambdaExpression, Func<object, object>> expressionCache = new Dictionary<LambdaExpression, Func<object, object>>();
+
+        [ThreadStatic]
+        internal static bool ThrowExecuteExpression;
+        internal class ExpressionException : Exception
+        {
+            public ExpressionException(LambdaExpression Value)
+            {
+                this.Value = Value;
+            }
+            public LambdaExpression Value { get; private set; }
+        }
 
         /// <summary>
         /// Executes a one argument expression given the argument, the expression compilation is cached
@@ -23,8 +36,11 @@ namespace Tonic
         /// <param name="Expression">The expression to execute</param>
         /// <param name="Input">The input argument</param>
         /// <returns>The result of the expression execution</returns>
-        public static TResult Execute<TInput, TResult>(this Expression<Func<TInput, TResult>> Expression, TInput Input)
+        public static TResult Execute<TInput, TResult>(this TInput Input, Expression<Func<TInput, TResult>> Expression)
         {
+            if (ThrowExecuteExpression)
+                throw new ExpressionException(Expression);
+
             Func<object, object> ret;
             if (!expressionCache.TryGetValue(Expression, out ret))
             {

@@ -18,9 +18,17 @@ namespace Tonic.MVVM
         void ShowDialog(object ViewModel);
     }
 
+    /// <summary>
+    /// Simple mock of the IView interface
+    /// </summary>
     public class ViewMock : IView
     {
-        public void ShowDialog(object ViewModel)
+        /// <summary>
+        /// A queue with the calls made to the ShowDialog method
+        /// </summary>
+        public Queue<object> ShowDialogCalls = new Queue<object>();
+
+        void IView.ShowDialog(object ViewModel)
         {
             Console.WriteLine($"Show dialog {ViewModel}");
         }

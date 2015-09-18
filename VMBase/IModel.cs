@@ -12,6 +12,9 @@ namespace Tonic.MVVM
     /// <typeparam name="T"></typeparam>
     public interface IModelViewModel<T>
     {
+        /// <summary>
+        /// Gets or sets the model associated with this view model
+        /// </summary>
         T Model { get; set; }
     }
 
