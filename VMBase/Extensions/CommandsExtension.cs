@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -59,20 +60,61 @@ namespace Tonic.MVVM.Extensions
             }
         }
 
-        /// <summary>
-        /// Expose public 0 and 1 parameter methods as command properties, with the 'Command' prefix
-        /// </summary>
-        /// <param name="Instance"></param>
-        public CommandsExtension(object Instance)
+        private static IEnumerable<MethodInfo> getCommandMethods(object instance, IEnumerable<Type> exclude)
         {
-            var Type = Instance.GetType();
+            var Type = instance.GetType();
 
-            //Busca todos los metodos
-            foreach (var M in Type.GetMethods())
+            var CompleteExclude = exclude.Concat(new Type[] { typeof(BaseViewModel) });
+            HashSet<MethodInfo> excluded = new HashSet<MethodInfo>(CompleteExclude.SelectMany(x => x.GetMethods()));
+
+            return Type.GetMethods().Where(x =>
             {
+                var r = !x.IsSpecialName && !excluded.Any(y => y.Name == x.Name && x.DeclaringType == y.DeclaringType);
+                var p = x.GetParameters();
+
+                return r && p.Length <= 1;
+            });
+        }
+
+        /// <summary>
+        /// Expose public 0 and 1 parameter methods as command properties, with the 'Command' postfix
+        /// </summary>
+        /// <param name="Instance">The instance of the type that contains the methods</param>
+        public CommandsExtension(object Instance) : this(Instance, getCommandMethods(Instance, new Type[0]))
+        { }
+
+        /// <summary>
+        /// Expose public 0 and 1 parameter methods as command properties, with the 'Command' postfix
+        /// </summary>
+        /// <param name="Instance">The instance of the type that contains the methods</param>
+        /// <param name="ExcludeMethodsFrom">Exclude methods from this types, BaseViewModel methods are excluded by default</param>
+        public CommandsExtension(object Instance, IEnumerable<Type> ExcludeMethodsFrom) : this(Instance, getCommandMethods(Instance, ExcludeMethodsFrom))
+        { }
+
+        /// <summary>
+        /// Expose the given methods as command properties with the 'Command' postfix
+        /// </summary>
+        /// <param name="Instance">The instance of the type that contains the methods</param>
+        /// <param name="MethodNames">The given method names to expose</param>
+        public CommandsExtension(object Instance, IEnumerable<string> MethodNames) : this(Instance, Instance.GetType().GetMethods().Where(x => MethodNames.Contains(x.Name)))
+        {
+
+        }
+
+        /// <summary>
+        /// Expose the given methods as command properties with the 'Command' postfix
+        /// </summary>
+        /// <param name="Instance">The instance of the type that contains the methods</param>
+        /// <param name="Methods">The given methods to expose</param>
+        public CommandsExtension(object Instance, IEnumerable<MethodInfo> Methods)
+        {
+            var InstanceType = Instance.GetType();
+            foreach (var M in Methods)
+            {
+
                 var CommandName = M.Name + "Command";
                 //Si el miembro command ya existe, lo ignora:
-                if (Type.GetProperty(CommandName) != null)
+                if (InstanceType.GetProperty(CommandName) != null)
                     continue;
 
                 var P = M.GetParameters();
@@ -84,6 +126,8 @@ namespace Tonic.MVVM.Extensions
                     case 1:
                         commands.Add(CommandName, new DelegateCommand((o) => M.Invoke(Instance, new object[] { o })));
                         break;
+                    default:
+                        throw new ArgumentException($"The command for the method '{M.Name}' can't be exposed because it has too many parameters ({P.Length})");
                 }
             }
         }

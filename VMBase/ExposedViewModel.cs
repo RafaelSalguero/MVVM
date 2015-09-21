@@ -12,10 +12,11 @@ using Tonic.MVVM.Extensions;
 namespace Tonic.MVVM
 {
     /// <summary>
-    /// Expose model properties as dynamic properties. This is a light-weight BaseViewModel with the CommandsExtension and the ExposedModelExtension that implements the IModelViewModel interface, without any aditional logic
+    /// Expose model properties as dynamic properties.
+    /// This is a light-weight CommitViewModel child with the added CommandsExtension and the ExposedModelExtension that implements the IModelViewModel and the ICommitViewModel interface, without any aditional logic
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ExposedViewModel<T> : BaseViewModel, IModelViewModel<T>
+    public class ExposedViewModel<T> : CommitViewModel, IModelViewModel<T>
     {
         /// <summary>
         /// Create a new instance for an exposed view model
