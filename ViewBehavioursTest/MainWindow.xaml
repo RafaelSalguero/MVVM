@@ -10,5 +10,8 @@
         Title="MainWindow" Height="350" Width="525">
     <Grid>
         <Button Content="Cerrar"  Width="100" Height="30" Command="{Binding CommitCommand}" />
+        <Button Content="Hola"  Width="100" Height="30" Command="{Binding HolaCommand}" Margin="209,181,209.871,110.571" />
+
+        <CheckBox  Content="Hola"  Width="100" Height="30" IsChecked="{Binding HolaEnabled}" Margin="209,216,209.871,75.571" />
     </Grid>
 </Window>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -107,5 +108,29 @@ namespace Tonic
         }
 
 
+        /// <summary>
+        /// In-place sort an observable collection using only the move method
+        /// </summary>
+        /// <typeparam name="TSource">Collection element type</typeparam>
+        /// <typeparam name="TKey">Key type</typeparam>
+        /// <param name="collection">The collection to sort</param>
+        /// <param name="Selector">Key selector</param>
+        public static void Sort<TSource, TKey>(this ObservableCollection<TSource> collection, Func<TSource, TKey> Selector)
+        {
+            var result = collection.Select((a, i) => new { a, i }).OrderBy(x => Selector(x.a)).ToList();
+            for (int i = 0; i < result.Count; i++)
+                collection.Move(result[i].i, i);
+        }
+
+        /// <summary>
+        /// In-place sort an observable collection using only the move method
+        /// </summary>
+        /// <typeparam name="TSource">Collection element type</typeparam>
+        /// <typeparam name="TKey">Key type</typeparam>
+        /// <param name="collection">The collection to sort</param>
+        public static void Sort<TSource, TKey>(this ObservableCollection<TSource> collection)
+        {
+            collection.Sort(x => x);
+        }
     }
 }

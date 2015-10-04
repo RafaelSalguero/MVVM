@@ -23,10 +23,11 @@ namespace ExampleView2
 
         private static INameLocator GetLocator()
         {
-            var P = new PairLocator(Designer());
-            foreach (var N in ConventionLocator.Locate(typeof(MainView), typeof(ExampleViewModel.MainViewModel)))
-                P.Add(N);
-            return P;
+            throw new NotImplementedException();
+            //var P = new PairLocator(Designer());
+            //foreach (var N in ConventionLocator.Locate(typeof(MainView), typeof(ExampleViewModel.MainViewModel)))
+            //    P.Add(N);
+            //return P;
         }
         public Locator() : base(GetLocator())
         {

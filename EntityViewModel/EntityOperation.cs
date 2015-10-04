@@ -28,10 +28,10 @@ namespace Tonic.EF
             get; set;
         }
 
-        public void Apply<T>(DbContext Context, IEnumerable Items)
+        public void Apply<T>(Func<T, T> GetEntity, IEnumerable Items)
             where T : class
         {
-            var Entity = Context.Set<T>().GetEntity((T)Item);
+            var Entity = GetEntity((T)Item);
             Apply((dynamic)Items, Type, Entity);
         }
 
@@ -87,13 +87,4 @@ namespace Tonic.EF
         void Persist(DbContext Context);
     }
 
-    public interface IEntityPersist
-    {
-        void Persist(DbContext Context);
-    }
-
-    public interface ICollectionPersist
-    {
-        void Persist(DbContext Context, IEnumerable Collection);
-    }
 }

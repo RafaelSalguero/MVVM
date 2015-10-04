@@ -21,6 +21,11 @@ namespace Tonic.MVVM
         bool Committed { get; }
 
         /// <summary>
+        /// Returns true if the view model state enable commits
+        /// </summary>
+        bool CanCommit { get; }
+
+        /// <summary>
         /// Raise the OnCommit event and set the HasBeenCommited property to true
         /// </summary>
         void Commit();

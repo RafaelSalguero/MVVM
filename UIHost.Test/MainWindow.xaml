@@ -1,0 +1,25 @@
+﻿<Window x:Class="UIHost.Test.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UIHost.Test"
+        xmlns:ui="http://toniccomputing.com/patterns/ui"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <ui:ButtonDock>
+            <ui:ButtonDock.Buttons>
+                <Button Content="Aceptar" />
+                <Button Content="Cancelar" />
+            </ui:ButtonDock.Buttons>
+            <ui:AutoGrid2>
+                <Label Content="Hola" />
+                <TextBox  />
+
+                <Label Content="Rafa" />
+                <TextBox  />
+            </ui:AutoGrid2>
+        </ui:ButtonDock>
+    </Grid>
+</Window>

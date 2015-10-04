@@ -24,7 +24,7 @@ namespace ViewBehavioursTest
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new CommitViewModel();
+            this.DataContext = new ViewModel();
         }
     }
 }

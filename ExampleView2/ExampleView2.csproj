@@ -117,10 +117,6 @@
       <Project>{230518f0-197a-4590-8af5-627881ac0b8b}</Project>
       <Name>ExampleData</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ExampleViewModel\ExampleViewModel.csproj">
-      <Project>{90997735-f74c-4416-9876-2e38da526c84}</Project>
-      <Name>ExampleViewModel</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ViewLocator\Locator.csproj">
       <Project>{22165f3c-0734-4fa0-8299-39c8bf23f5af}</Project>
       <Name>Locator</Name>

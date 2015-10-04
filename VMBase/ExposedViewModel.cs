@@ -46,5 +46,15 @@ namespace Tonic.MVVM
         }
 
 
+        object IModelViewModel.Model
+        {
+            get { return Model; }
+            set { Model = (T)value; }
+        }
+
+        Type IModelViewModel.ModelType
+        {
+            get { return typeof(T); }
+        }
     }
 }

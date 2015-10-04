@@ -1,0 +1,21 @@
+﻿<Window x:Class="ViewBehaviours.TestValidation.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ViewBehaviours.TestValidation"
+        xmlns:ui="http://toniccomputing.com/patterns/ui"
+        mc:Ignorable="d"
+        
+        ui:IsValid.Binding="{Binding ElementName=OkButton, Path=IsEnabled}"
+        
+        Title="MainWindow" Height="350" Width="525">
+    <Grid >
+        <TextBox x:Name="textBox" Text="{ui:Binding Value}" Width="100" Height="20" />
+
+        <CheckBox Content="Valido" IsChecked="{ui:Binding UserValid}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="294,189,133.871,102.571" Height="30" Width="91" />
+
+        <Button x:Name="OkButton" Content="Guardar" Margin="164,94,209.871,175.571" />
+        <Button x:Name="AButton" Content="Aceptar" Margin="314,94,59.871,175.571" IsEnabled="{Binding ElementName=OkButton, Path=IsEnabled}" />
+    </Grid>
+</Window>
