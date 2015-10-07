@@ -356,7 +356,11 @@ namespace Tonic.MVVM.Extensions
                 return typeof(TViewModel);
             else
             {
-                if ((PropertyName == (collectionPrefix + addPostfix)) || (PropertyName == (collectionPrefix + editPostfix) || (PropertyName == (collectionPrefix + removePostfix)))
+                if (
+                    (PropertyName == (collectionPrefix + addPostfix)) || 
+                    (PropertyName == (collectionPrefix + editPostfix)) || 
+                    (PropertyName == (collectionPrefix + removePostfix)))
+
                     return typeof(DelegateCommand);
                 else
                     throw new InvalidOperationException();

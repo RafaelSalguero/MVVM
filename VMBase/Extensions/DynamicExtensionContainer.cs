@@ -14,6 +14,14 @@ namespace Tonic.MVVM.Extensions
     public class DynamicExtensionContainer : DynamicObject, ICustomTypeDescriptor
     {
         /// <summary>
+        /// Create a new dynamic extension container without property change notification
+        /// </summary>
+        public DynamicExtensionContainer() : this(null)
+        {
+
+        }
+
+        /// <summary>
         /// Create a new dynamic extension container
         /// </summary>
         /// <param name="RaisePropertyChanged">Can be null. This callback will be called when a property is dynamicly setted</param>
@@ -82,14 +90,13 @@ namespace Tonic.MVVM.Extensions
             if (!CanWrite) return false;
 
             bool RaisePropertyChanged = false;
-            RaisePropertyChanged = D.CanRead(binder.Name) && !object.Equals(D.Get(binder.Name), value);
+            RaisePropertyChanged = (raisePropertyChanged != null) && D.CanRead(binder.Name) && !object.Equals(D.Get(binder.Name), value);
 
             D.Set(binder.Name, value);
 
             if (RaisePropertyChanged)
             {
-                if (raisePropertyChanged != null)
-                    raisePropertyChanged(this, new PropertyChangedEventArgs(binder.Name));
+                raisePropertyChanged(this, new PropertyChangedEventArgs(binder.Name));
             }
             return true;
         }

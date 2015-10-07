@@ -55,7 +55,25 @@ namespace VMBase.Test
 
         public class MViewModel : ExposedViewModel<Model>
         {
+            public int Edad
+            {
+                get; set;
+            }
 
+        }
+
+        
+        [TestMethod]
+        public void PropertyDescriptorTest()
+        {
+            var VM = new MViewModel();
+            var Props = TypeDescriptor.GetProperties(VM).Cast<PropertyDescriptor>().Select(x => new { x.Name, x.PropertyType, x.IsReadOnly }).OrderBy(x => x.Name).ToArray();
+
+            var Names = new[] { "Apellido", "CanCommit",  "CommitCommand", "Committed", "Edad","Model", "Nombre" };
+            var Types = new[] { typeof(string), typeof(bool), typeof(ICommand), typeof(bool), typeof(int), typeof(Model), typeof(string) };
+
+            Assert.IsTrue(Names.SequenceEqual(Props.Select(x => x.Name)));
+            Assert.IsTrue(Types.SequenceEqual(Props.Select(x => x.PropertyType)));
         }
 
         [TestMethod]
@@ -112,6 +130,17 @@ namespace VMBase.Test
 
             //Ya no tiene errores
             Assert.AreEqual(false, err.GetErrors("Nombre").Cast<string>().Any());
+        }
+
+        [TestMethod]
+        public void CommitCommandTest()
+        {
+            //Crea un nuevo view model:
+            var VM = new MViewModel();
+
+            //El comando commit:
+            var C = (ICommand)((dynamic)VM).CommitCommand;
+
         }
 
         [TestMethod]

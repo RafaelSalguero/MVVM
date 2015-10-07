@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,17 @@ namespace Tonic.UI
 {
     static class PropertyPathHelper
     {
+       
         public static object GetValue(object obj, string propertyPath)
+        {
+            Binding binding = new Binding(propertyPath);
+            binding.Mode = BindingMode.OneTime;
+            binding.Source = obj;
+            BindingOperations.SetBinding(_dummy, Dummy.ValueProperty, binding);
+            return _dummy.GetValue(Dummy.ValueProperty);
+        }
+
+        public static object GetTargetType(object obj, string propertyPath)
         {
             Binding binding = new Binding(propertyPath);
             binding.Mode = BindingMode.OneTime;

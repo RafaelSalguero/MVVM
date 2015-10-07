@@ -59,7 +59,7 @@
     <Compile Include="ExtensionHelper.cs" />
     <Compile Include="Extensions\CollectionCommandsExtension.cs" />
     <Compile Include="Extensions\CommandsExtension.cs" />
-    <Compile Include="DynamicExtension.cs" />
+    <Compile Include="IDynamicExtension.cs" />
     <Compile Include="Extensions\DynamicExtensionContainer.cs" />
     <Compile Include="Extensions\ExposedModelExtension.cs" />
     <Compile Include="ExposedViewModel.cs" />

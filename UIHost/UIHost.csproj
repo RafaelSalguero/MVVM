@@ -58,17 +58,15 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="ButtonDock.xaml">
+    <Compile Include="AutoGrid.cs" />
+    <Compile Include="AutoGrid2.cs" />
+    <Page Include="Themes\generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Compile Include="AutoGrid.cs" />
-    <Compile Include="AutoGrid2.cs" />
-    <Compile Include="ButtonDock.xaml.cs">
-      <DependentUpon>ButtonDock.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ButtonDock.cs" />
     <Compile Include="DependencyHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

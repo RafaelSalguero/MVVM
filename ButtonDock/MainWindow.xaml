@@ -1,0 +1,21 @@
+﻿<Window x:Class="Tonic.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tonic.UI"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <local:ButtonDock2>
+            <local:ButtonDock2.Buttons>
+                <Button Content="Hola" />
+                <Button Content="Rafa" />
+            </local:ButtonDock2.Buttons>
+            <StackPanel>
+                <Button Content="Hola"/>
+                <Button Content="Rafa" />
+            </StackPanel>
+        </local:ButtonDock2>
+    </Grid>
+</Window>

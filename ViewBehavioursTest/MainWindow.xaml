@@ -9,8 +9,17 @@
         ui:Close.Trigger="{Binding Committed}"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
+        <Grid.Resources>
+            <ui:EnumConverter x:Key="enumConv" />
+        </Grid.Resources>
         <Button Content="Cerrar"  Width="100" Height="30" Command="{Binding CommitCommand}" />
         <Button Content="Hola"  Width="100" Height="30" Command="{Binding HolaCommand}" Margin="209,181,209.871,110.571" />
+
+        <ComboBox SelectedValue="{Binding Item}" DisplayMemberPath="Description" SelectedValuePath="Value" ItemsSource="{ui:EnumSource {x:Type local:TestEnum}}" VerticalAlignment="Center" Margin="208,10,173,274" Height="35" />
+
+
+        <ComboBox SelectedItem="{Binding Item, Converter={StaticResource enumConv}}"  ItemsSource="{ui:EnumSource Item}" VerticalAlignment="Center" Margin="67,10,314,274" Height="35" />
+        <ComboBox SelectedItem="{Binding Item}"  ItemsSource="{ui:EnumSource Item, Friendly=False}" VerticalAlignment="Center" Margin="349,10,32,274" Height="35" />
 
         <CheckBox  Content="Hola"  Width="100" Height="30" IsChecked="{Binding HolaEnabled}" Margin="209,216,209.871,75.571" />
     </Grid>

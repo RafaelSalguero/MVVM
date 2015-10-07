@@ -8,18 +8,19 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
+       
         <ui:ButtonDock>
             <ui:ButtonDock.Buttons>
                 <Button Content="Aceptar" />
                 <Button Content="Cancelar" />
             </ui:ButtonDock.Buttons>
-            <ui:AutoGrid2>
+            <ui:AutoGridN N="1">
                 <Label Content="Hola" />
                 <TextBox  />
 
                 <Label Content="Rafa" />
                 <TextBox  />
-            </ui:AutoGrid2>
+            </ui:AutoGridN>
         </ui:ButtonDock>
     </Grid>
 </Window>

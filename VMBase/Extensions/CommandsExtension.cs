@@ -219,5 +219,10 @@ namespace Tonic.MVVM.Extensions
         {
             return false;
         }
+
+        Type IDynamicExtension.GetPropertyType(string PropertyName)
+        {
+            return typeof(ICommand);
+        }
     }
 }

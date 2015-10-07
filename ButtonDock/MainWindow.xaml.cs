@@ -12,9 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Tonic.MVVM;
 
-namespace ViewBehavioursTest
+namespace Tonic.UI
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -24,12 +23,6 @@ namespace ViewBehavioursTest
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new ViewModel();
-        }
-
-        private void ComboBox_Selected(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }
