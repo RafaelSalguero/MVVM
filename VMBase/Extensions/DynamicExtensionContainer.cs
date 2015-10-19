@@ -48,6 +48,15 @@ namespace Tonic.MVVM.Extensions
             dynamicExtensions.Add(Extension);
         }
 
+        /// <summary>
+        /// Get all dynamic and static property names
+        /// </summary>
+        /// <returns></returns>
+        public override IEnumerable<string> GetDynamicMemberNames()
+        {
+            return TypeDescriptor.GetProperties(this).Cast<PropertyDescriptor>().Select(x => x.Name);
+        }
+
         private IDynamicExtension getDynamicExtension(string PropertyName)
         {
             if (StrongProperties.Contains(PropertyName)) return null;
@@ -182,6 +191,8 @@ namespace Tonic.MVVM.Extensions
         {
             return this;
         }
+
+        
         #endregion 
         #endregion
 

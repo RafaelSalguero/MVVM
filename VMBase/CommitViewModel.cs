@@ -53,7 +53,7 @@ namespace Tonic.MVVM
         }
 
         /// <summary>
-        /// Calls the try commit method and 
+        /// Calls the BeforeCommit method, raise the OnCommit event and change the Committed property to true
         /// </summary>
         public void Commit()
         {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Tonic
 {
-    class DecompiledQuery<T> : IQueryable<T>
+    sealed class DecompiledQuery<T> : IOrderedQueryable<T>
     {
         public DecompiledQuery(IQueryable<T> original)
         {

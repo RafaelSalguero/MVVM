@@ -54,11 +54,15 @@
   <ItemGroup>
     <Compile Include="BaseViewModel.cs" />
     <Compile Include="CommandCollection.cs" />
+    <Compile Include="CommandsViewModel.cs" />
     <Compile Include="CommitViewModel.cs" />
     <Compile Include="DelegateCommand.cs" />
+    <Compile Include="Dialogs\FileViewModel.cs" />
+    <Compile Include="Dialogs\MessageViewModel.cs" />
     <Compile Include="ExtensionHelper.cs" />
     <Compile Include="Extensions\CollectionCommandsExtension.cs" />
     <Compile Include="Extensions\CommandsExtension.cs" />
+    <Compile Include="IDateTime.cs" />
     <Compile Include="IDynamicExtension.cs" />
     <Compile Include="Extensions\DynamicExtensionContainer.cs" />
     <Compile Include="Extensions\ExposedModelExtension.cs" />
@@ -69,6 +73,7 @@
     <Compile Include="IDialogs.cs" />
     <Compile Include="IModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyChangedExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

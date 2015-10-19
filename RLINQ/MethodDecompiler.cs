@@ -13,7 +13,7 @@ namespace Tonic
     {
         public static bool TryGetExpression(MethodInfo Method, out LambdaExpression Result)
         {
-            var Instance = FormatterServices.GetUninitializedObject(Method.DeclaringType);
+            var Instance = Method.DeclaringType.IsAbstract ? null : FormatterServices.GetUninitializedObject(Method.DeclaringType);
             try
             {
                 Tonic.ExtensionMethods.ThrowExecuteExpression = true;

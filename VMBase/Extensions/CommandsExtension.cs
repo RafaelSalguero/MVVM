@@ -43,13 +43,7 @@ namespace Tonic.MVVM.Extensions
 
         private Dictionary<string, DelegateCommand> commands = new Dictionary<string, DelegateCommand>();
 
-        IEnumerable<string> IDynamicExtension.MemberNames
-        {
-            get
-            {
-                return commands.Keys;
-            }
-        }
+
 
         private static IEnumerable<MethodInfo> getCommandMethods(object instance, IEnumerable<Type> exclude)
         {
@@ -223,6 +217,14 @@ namespace Tonic.MVVM.Extensions
         Type IDynamicExtension.GetPropertyType(string PropertyName)
         {
             return typeof(ICommand);
+        }
+
+        IEnumerable<string> IDynamicExtension.MemberNames
+        {
+            get
+            {
+                return commands.Keys;
+            }
         }
     }
 }

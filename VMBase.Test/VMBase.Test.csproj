@@ -61,6 +61,7 @@
     <Compile Include="MementoTest.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VMBase\VMBase.csproj">

@@ -17,6 +17,6 @@ namespace ViewLocatorTest
             return P;
         }
 
-        public Locator() : base(GetLocator()) { }
+        public Locator(string Name) : base(GetLocator(), Name) { }
     }
 }

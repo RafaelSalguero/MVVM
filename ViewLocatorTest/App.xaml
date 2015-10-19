@@ -4,6 +4,5 @@
              xmlns:local="clr-namespace:ViewLocatorTest"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         <local:Locator x:Key="Locator" />
     </Application.Resources>
 </Application>

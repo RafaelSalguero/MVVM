@@ -61,17 +61,32 @@ namespace Tonic.MVVM
                 if (Update)
                 {
                     List.Clear();
-                    List.Add(Error);
-                    errorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(PropertyName));
+                    AddError(PropertyName, Error);
                 }
             }
+        }
+
+        /// <summary>
+        /// Add an error to this property
+        /// </summary>
+        /// <param name="PropertyName">The property name</param>
+        /// <param name="Error">The error to add</param>
+
+        protected void AddError(string PropertyName, object Error)
+        {
+            if (Error == null)
+                throw new ArgumentException(nameof(Error));
+            var List = GetErrors(PropertyName);
+
+            List.Add(Error);
+            errorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(PropertyName));
         }
 
         /// <summary>
         /// Clear the validation error for this property
         /// </summary>
         /// <param name="PropertyName">The property name</param>
-        private void ClearError(string PropertyName)
+        protected void ClearError(string PropertyName)
         {
             var List = GetErrors(PropertyName);
             if (List.Count != 0)

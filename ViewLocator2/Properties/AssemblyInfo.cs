@@ -7,11 +7,11 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ViewLocator2")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Tonic.MVVM.ViewLocator")]
+[assembly: AssemblyDescription("Provides an implementation of the IDialogs interface")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ViewLocator2")]
+[assembly: AssemblyCompany("Tonic Computing")]
+[assembly: AssemblyProduct("Tonic.MVVM.ViewLocator")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -9,26 +9,37 @@ namespace Tonic.MVVM
     /// <summary>
     /// Contains mockable methods for showing views from view models
     /// </summary>
-    public interface IView
+    public interface IDialogs
     {
         /// <summary>
-        /// Shows a view given a view model.
+        /// Shows a model view given a view model.
         /// </summary>
         /// <param name="ViewModel">The view model to inject onto the view</param>
         void ShowDialog(object ViewModel);
+
+        /// <summary>
+        /// Shows a modeless view given a view model
+        /// </summary>
+        /// <param name="ViewModel">The view model to inject onto the view</param>
+        void Show(object ViewModel);
     }
 
     /// <summary>
     /// Simple mock of the IView interface
     /// </summary>
-    public class ViewMock : IView
+    public class ViewMock : IDialogs
     {
         /// <summary>
         /// A queue with the calls made to the ShowDialog method
         /// </summary>
         public Queue<object> ShowDialogCalls = new Queue<object>();
 
-        void IView.ShowDialog(object ViewModel)
+        public void Show(object ViewModel)
+        {
+            Console.WriteLine($"Show {ViewModel}");
+        }
+
+        void IDialogs.ShowDialog(object ViewModel)
         {
             Console.WriteLine($"Show dialog {ViewModel}");
         }

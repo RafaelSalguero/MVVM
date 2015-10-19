@@ -13,7 +13,7 @@ namespace ExampleView2
         public static IServiceProvider Designer()
         {
             var Kernel = new Ninject.StandardKernel();
-            Kernel.Bind<IView>().To<ViewMock>();
+            Kernel.Bind<IDialogs>().To<ViewMock>();
 
             Func<ExampleData.ExampleContext> Context = () => new ExampleData.ExampleContext(Effort.DbConnectionFactory.CreateTransient());
             Kernel.Bind<Func<ExampleData.ExampleContext>>().ToMethod(x => Context);
@@ -29,7 +29,7 @@ namespace ExampleView2
             //    P.Add(N);
             //return P;
         }
-        public Locator() : base(GetLocator())
+        public Locator(string Name) : base(GetLocator())
         {
         }
     }

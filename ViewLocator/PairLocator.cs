@@ -66,6 +66,10 @@ namespace Tonic.MVVM
             items.Add(new VVMPair(null, ViewModelType, Name));
         }
 
+        /// <summary>
+        /// Add a new name-view model pair
+        /// </summary>
+        /// <param name="Pair"></param>
         public void Add(VVMPair Pair)
         {
             items.Add(Pair);
@@ -83,9 +87,14 @@ namespace Tonic.MVVM
             Add(ViewModelType, ViewModelType.Name.Substring(0, ViewModelType.Name.Length - ViewModelPostfix.Length));
         }
 
+        /// <summary>
+        /// Gets a view model type by name
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <returns></returns>
         protected override Type GetViewModelType(string Name)
         {
-            return items.FirstOrDefault(x => x.Name == Name).ViewModel;
+            return items.FirstOrDefault(x => x.Name == Name)?.ViewModel;
         }
     }
 }

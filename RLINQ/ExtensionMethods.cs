@@ -81,7 +81,14 @@ namespace Tonic
         /// <returns>A query that expand property getters that implement the Expression.Execute pattern</returns>
         public static IQueryable<T> Decompile<T>(this IQueryable<T> Query)
         {
-            return new DecompiledQuery<T>(Query);
+            var QueryType = Query.GetType();
+            if (QueryType.IsGenericType && QueryType.GetGenericTypeDefinition() == typeof(DecompiledQuery<>))
+            {
+                //Si el query ya esta decompilado, devuelve la misma instancia
+                return Query;
+            }
+            else
+                return new DecompiledQuery<T>(Query);
         }
 
         /// <summary>
@@ -131,6 +138,24 @@ namespace Tonic
         public static void Sort<TSource, TKey>(this ObservableCollection<TSource> collection)
         {
             collection.Sort(x => x);
+        }
+
+        /// <summary>
+        /// Get the given exception and all its neasted inner exceptions
+        /// </summary>
+        /// <param name="Ex">The original exception</param>
+        /// <returns>A collection of all inner exceptions</returns>
+        public static IEnumerable<Exception> GetAllExceptions(this Exception ex)
+        {
+            List<Exception> exceptions = new List<Exception>() { ex };
+
+            Exception currentEx = ex;
+            while (currentEx.InnerException != null)
+            {
+                currentEx = currentEx.InnerException;
+                exceptions.Add(currentEx);
+            }
+            return exceptions;
         }
     }
 }

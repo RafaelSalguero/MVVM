@@ -87,12 +87,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ExampleView2\ExampleView2.csproj">
-      <Project>{6c31c448-8aa2-4912-a7dd-121cf30e9c9f}</Project>
-      <Name>ExampleView2</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

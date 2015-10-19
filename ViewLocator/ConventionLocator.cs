@@ -32,10 +32,13 @@ namespace Tonic.MVVM
         /// </summary>
         public Type ViewModel { get; private set; }
 
+        /// <summary>
+        /// The view type
+        /// </summary>
         public Type View { get; private set; }
     }
 
-    public class ConventionLocator
+    public static class ConventionLocator
     {
         private const string ViewPostfix = "View";
         private const string ViewModelPostfix = "ViewModel";
