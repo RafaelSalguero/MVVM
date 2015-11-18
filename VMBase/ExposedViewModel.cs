@@ -28,24 +28,15 @@ namespace Tonic.MVVM
         }
 
 
-        private T model;
         /// <summary>
         /// The model that exposes its properties
         /// </summary>
         public T Model
         {
-            get
-            {
-                return model;
-            }
-            set
-            {
-                model = value;
-                RaisePropertyChanged(nameof(Model));
-            }
+            get; set;
         }
 
-
+        [PropertyChanged.DoNotNotify]
         object IModelViewModel.Model
         {
             get { return Model; }

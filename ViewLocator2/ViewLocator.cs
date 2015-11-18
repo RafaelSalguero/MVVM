@@ -61,6 +61,11 @@ namespace Tonic.MVVM
     {
         private readonly List<ViewViewModelDependency> dependencies = new List<ViewViewModelDependency>();
 
+        public ViewLocator()
+        {
+            Add(typeof(Views.ProgressView), typeof(Tonic.MVVM.Dialogs.ProgressViewModel));
+        }
+
         /// <summary>
         /// Add a dependency between a view constructor and a view predicate
         /// </summary>
@@ -68,6 +73,11 @@ namespace Tonic.MVVM
         public void Add(ViewViewModelDependency Dependency)
         {
             dependencies.Add(Dependency);
+        }
+
+        public void Add(Type View, Type ViewModel)
+        {
+            Add(new VVMPair(View, ViewModel, ViewModel.Name));
         }
 
         /// <summary>
@@ -81,7 +91,7 @@ namespace Tonic.MVVM
 
         private FrameworkElement CreateView(object ViewModel)
         {
-            var D = dependencies.FirstOrDefault(x => x.ViewModelPredicate(ViewModel));
+            var D = dependencies.LastOrDefault(x => x.ViewModelPredicate(ViewModel));
             var View = D.ViewConstructor();
             View.DataContext = ViewModel;
             return View;
@@ -102,10 +112,12 @@ namespace Tonic.MVVM
             {
                 var D = new OpenFileDialog();
                 D.Title = Vm.Title;
+                D.Filter = Vm.Extensions;
                 D.FileName = Vm.FilePath;
 
                 if (D.ShowDialog() == true)
                 {
+                    Vm.FilePath = D.FileName;
                     Vm.Commit();
                 }
             }
@@ -113,10 +125,13 @@ namespace Tonic.MVVM
             {
                 var D = new SaveFileDialog();
                 D.Title = Vm.Title;
+                D.Filter = Vm.Extensions;
                 D.FileName = Vm.FilePath;
+                D.AddExtension = true;
 
                 if (D.ShowDialog() == true)
                 {
+                    Vm.FilePath = D.FileName;
                     Vm.Commit();
                 }
             }
@@ -141,9 +156,9 @@ namespace Tonic.MVVM
             {
                 ShowMessageDialog((MessageViewModel)ViewModel);
             }
-            else if (ViewModel is string )
+            else if (ViewModel is string)
             {
-                 ShowDialog(new MessageViewModel { Message = (string)ViewModel });
+                ShowDialog(new MessageViewModel { Message = (string)ViewModel });
             }
             else
             {

@@ -14,11 +14,11 @@ namespace Tonic.UI
     public static class ParentTraverse
     {
         /// <summary>
-        /// Search a dependency object of the given type
+        /// Search a dependency object of the given type. If not found returns null
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="Element"></param>
-        /// <returns></returns>
+        /// <returns>Return the first apparence of a dependency object of type T or null if not found</returns>
         public static T TrySearchDependencyObject<T>(DependencyObject Element)
             where T : class
         {
@@ -27,11 +27,11 @@ namespace Tonic.UI
         }
 
         /// <summary>
-        /// Search a dependency object of the given type
+        /// Search a dependency object of the given type. If not found throws an exception
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="Element"></param>
-        /// <returns></returns>
+        /// <returns>Return the first apparence of a dependency object of type T</returns>
         public static T SearchDependencyObject<T>(DependencyObject Element)
             where T : DependencyObject
         {

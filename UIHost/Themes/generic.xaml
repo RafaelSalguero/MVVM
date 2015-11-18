@@ -19,11 +19,11 @@
                         </ScrollViewer>
                         <StackPanel Grid.Row="1" Background="#11000000">
                             <Separator Margin="0" Background="#33000000"/>
-                            <ItemsControl ItemsSource="{TemplateBinding Buttons}" Margin="10"  HorizontalAlignment="{TemplateBinding ButtonAlignment}" >
+                            <ItemsControl IsTabStop="False" ItemsSource="{TemplateBinding Buttons}" Margin="10"  HorizontalAlignment="{TemplateBinding ButtonAlignment}" >
                                 <ItemsControl.Resources>
                                     <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button }}">
                                         <Setter Property="Margin" Value="5,0,0,0" />
-                                        <Setter Property="Padding" Value="5,3,5,3" />
+                                        <Setter Property="Padding" Value="5,2,5,2" />
                                     </Style>
                                 </ItemsControl.Resources>
                                 <ItemsControl.ItemsPanel>

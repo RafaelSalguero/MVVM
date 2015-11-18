@@ -18,36 +18,13 @@ namespace Tonic.MVVM
         {
             this.locator = locator;
             this.name = Name;
-            this.Proxy = false;
         }
 
-        //public override bool TryGetMember(GetMemberBinder binder, out object result)
-        //{
-        //    result = locator.Get(binder.Name);
-        //    return result != null;
 
-        //}
-
-        public bool Proxy
-        {
-            get; set;
-        }
-
-   
-        public interface dummy { }
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             var Instance = locator.Get(name);
-            if (Proxy)
-            {
-                var ret = Tonic.DictionaryBuilder.DictionaryBuilderFactory.Create(new Tonic.DictionaryBuilder.TypeDescriptorProperties(Instance));
-
-                return ret;
-            }
-            else
-            {
-                return Instance;
-            }
+            return Instance;
         }
     }
 }

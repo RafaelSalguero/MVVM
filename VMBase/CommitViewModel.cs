@@ -55,11 +55,11 @@ namespace Tonic.MVVM
         /// <summary>
         /// Calls the BeforeCommit method, raise the OnCommit event and change the Committed property to true
         /// </summary>
-        public void Commit()
+        public async Task Commit()
         {
             if (!CanCommit)
                 throw new InvalidOperationException("CanCommit must be true");
-            if (BeforeCommit())
+            if (await BeforeCommit())
             {
                 OnCommit?.Invoke(this, new EventArgs());
                 hasBeenComited = true;
@@ -70,6 +70,6 @@ namespace Tonic.MVVM
         /// <summary>
         /// Implement custom logic before the OnCommit event raises. Returns false if the commit operation must be cancelled
         /// </summary>
-        protected virtual bool BeforeCommit() { return true; }
+        protected virtual async Task<bool> BeforeCommit() { return true; }
     }
 }

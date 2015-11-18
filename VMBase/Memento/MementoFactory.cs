@@ -132,7 +132,4 @@ namespace Tonic.MVVM
         }
     }
 
-    class IMementoManager
-    {
-    }
 }

@@ -28,6 +28,6 @@ namespace Tonic.MVVM
         /// <summary>
         /// Raise the OnCommit event and set the HasBeenCommited property to true
         /// </summary>
-        void Commit();
+        Task Commit();
     }
 }

@@ -15,8 +15,9 @@ namespace Tonic
     /// </summary>
     public static class ExtensionMethods
     {
+        //Nota: no se deben de inicializar las variables estáticas marcadas con el atributo ThreadStatic
         [ThreadStatic]
-        private static Dictionary<LambdaExpression, Func<object, object>> expressionCache = new Dictionary<LambdaExpression, Func<object, object>>();
+        private static Dictionary<LambdaExpression, Func<object, object>> expressionCache = null;
 
         [ThreadStatic]
         internal static bool ThrowExecuteExpression;
@@ -43,6 +44,10 @@ namespace Tonic
                 throw new ExpressionException(Expression);
 
             Func<object, object> ret;
+
+            if (expressionCache == null)
+                expressionCache = new Dictionary<LambdaExpression, Func<object, object>>();
+
             if (!expressionCache.TryGetValue(Expression, out ret))
             {
                 var Compile = Expression.Compile();

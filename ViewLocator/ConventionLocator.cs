@@ -69,17 +69,25 @@ namespace Tonic.MVVM
 
             foreach (var Group in vTypes)
                 foreach (var View in Group)
-                    foreach (var ViewModel in vmTypes[Group.Key])
-                    {
-                        ret.Add(new VVMPair(View, ViewModel, Group.Key));
-                        usedPairs.Add(Tuple.Create(View, ViewModel));
-                    }
+                    if (vmTypes.Any())
+                        foreach (var ViewModel in vmTypes[Group.Key])
+                        {
+                            ret.Add(new VVMPair(View, ViewModel, Group.Key));
+                            usedPairs.Add(Tuple.Create(View, ViewModel));
+
+                        }
+                    else
+                        ret.Add(new VVMPair(View, null, Group.Key));
 
             foreach (var Group in vmTypes)
                 foreach (var ViewModel in Group)
-                    foreach (var View in vTypes[Group.Key])
-                        if (!usedPairs.Contains(Tuple.Create(View, ViewModel)))
-                            ret.Add(new VVMPair(View, ViewModel, Group.Key));
+                    if (vTypes[Group.Key].Any())
+                        foreach (var View in vTypes[Group.Key])
+                            if (!usedPairs.Contains(Tuple.Create(View, ViewModel)))
+                                ret.Add(new VVMPair(View, ViewModel, Group.Key));
+                            else
+                                ret.Add(new VVMPair(null, ViewModel, Group.Key));
+
 
 
             return ret;

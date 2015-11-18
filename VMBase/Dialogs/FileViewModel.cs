@@ -19,5 +19,10 @@ namespace Tonic.MVVM.Dialogs
         public string FilePath { get; set; }
 
         public bool IsOpen { get; set; }
+
+        /// <summary>
+        /// File extensions with the "friendly name | filter" format
+        /// </summary>
+        public string Extensions { get; set; }
     }
 }

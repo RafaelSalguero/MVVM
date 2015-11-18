@@ -14,13 +14,16 @@ namespace Tonic.Console
     /// </summary>
     public class ConsoleHelper
     {
+        enum StackOp
+        {
+            Begin,
+            End
+        }
+
         /// <summary>
         /// Converts an string onto a value of the given type
         /// </summary>
-        /// <param name="Value">The given value</param>
-        /// <param name="Data">The data type</param>
-        /// <returns></returns>
-        public static object FromString(string Value, Type Type)
+        static object FromString(string Value, Type Type)
         {
             if (Value == "null")
                 return null;
@@ -29,23 +32,29 @@ namespace Tonic.Console
             return Converter.ConvertFromString(Value);
         }
 
-        public static string[] SplitLines(string Input)
+
+        static List<List<string>> Split(string Input)
         {
-            return Input.Split(';').Select(x => x.Trim()).Where(x => x.Length > 0).ToArray();
+            return WordSplitter.SplitLines(Input);
         }
 
-        private static string[] Split(string Input)
-        {
-            return Input.Split(' ').Where(x => x.Length > 0).ToArray();
-        }
+
 
         private List<MethodInfo> Methods = new List<MethodInfo>();
 
+
         public Stack<object> Stack = new Stack<object>();
-        public Dictionary<string, object> Locals = new Dictionary<string, object>();
-        public List<Type> Types = new List<Type>();
+        Dictionary<string, object> Locals = new Dictionary<string, object>();
+        List<Type> Types = new List<Type>();
+
+        /// <summary>
+        /// The instance that will be passed to named methods
+        /// </summary>
         public object Instance;
 
+        /// <summary>
+        /// Create a new console helper
+        /// </summary>
         public ConsoleHelper()
         {
             Types.Add(typeof(Int64));
@@ -61,6 +70,10 @@ namespace Tonic.Console
             Types.Add(typeof(Queryable));
         }
 
+        /// <summary>
+        /// Load all types from the given assembly
+        /// </summary>
+        /// <param name="AssemblyReference"></param>
         public void LoadAssemblyTypes(Type AssemblyReference)
         {
             foreach (var Type in AssemblyReference.Assembly.GetTypes())
@@ -75,14 +88,18 @@ namespace Tonic.Console
         {
             Methods.Add(Method);
         }
+        /// <summary>
+        /// Load all methods from the given instance
+        /// </summary>
+        /// <param name="Instance"></param>
         public void LoadInstance(object Instance)
         {
             Methods.AddRange(Instance.GetType().GetMethods());
         }
 
-        public Type GetType(string Name)
+        Type GetType(string Name)
         {
-            var SimpleName = Types.Where(x => x.Name == Name);
+            var SimpleName = Types.Where(x => x.Name.ToLowerInvariant() == Name.ToLowerInvariant());
             if (SimpleName.Count() > 1)
                 throw new ArgumentException($"Can't solve between {Types.Select(x => x.FullName + Environment.NewLine).Aggregate("", (a, b) => a + b, x => x)}");
             else if (SimpleName.Count() == 1)
@@ -90,14 +107,14 @@ namespace Tonic.Console
                 return SimpleName.First();
             }
 
-            var FullName = Types.Where(x => x.FullName == Name).FirstOrDefault();
+            var FullName = Types.Where(x => x.FullName.ToLowerInvariant() == Name.ToLowerInvariant()).FirstOrDefault();
             if (FullName == null)
                 throw new ArgumentException($"Type {Name} not found");
 
             return FullName;
         }
 
-        public string Help()
+        string Help()
         {
             StringBuilder B = new StringBuilder();
 
@@ -116,7 +133,6 @@ namespace Tonic.Console
             B.AppendLine("***************");
             B.AppendLine();
 
-            B.AppendLine("[value] [type] cast  - cast [value] to [type]");
             B.AppendLine("str [string] - loads [string] to the stack");
             B.AppendLine("int [value] - loads [value] to the stack");
             B.AppendLine("null - load null onto the stack");
@@ -126,8 +142,8 @@ namespace Tonic.Console
             B.AppendLine("***************");
             B.AppendLine();
 
-            B.AppendLine("store [var] - store the stack item onto [var]");
-            B.AppendLine("load [var] - load [var] onto the stack");
+            B.AppendLine("store [var] - store the stack item onto [var] (shortcut form: >)");
+            B.AppendLine("load [var] - load [var] onto the stack (shortcut form: <)");
             B.AppendLine("locals - Show all variables");
 
 
@@ -136,7 +152,8 @@ namespace Tonic.Console
             B.AppendLine();
 
             B.AppendLine("types - show all loaded types");
-            B.AppendLine("type [type] - load the given type by name onto the stack");
+            B.AppendLine("[value] [type] cast  - cast [value] to [type]");
+            B.AppendLine("type [type] - load the given type by name onto the stack (short form: #)");
             B.AppendLine("[instance] typeof - gets the type of the stack item");
             B.AppendLine("[value] [type] cast - cast value to type");
 
@@ -145,11 +162,15 @@ namespace Tonic.Console
             B.AppendLine("***************");
             B.AppendLine();
 
-            B.AppendLine("[params] [type] new [?param count] - calls the constructor for type");
-            B.AppendLine("[params] [type params] [instance] calli [method] [?param count] [?type count] - call method for instance with params");
-            B.AppendLine("[params] [type params] [instance] [type] callt [method] [?param count] [?type count] - call method from type for instance with params");
-            B.AppendLine("[params] [type params] [type] calls [method] [?param count] [?type count] - call static method from type with params");
+            B.AppendLine("[params] [type] array - create an array of type, (short form: $)");
+            B.AppendLine("[params] [type] new - calls the constructor for type, (short form: !)");
+            B.AppendLine("[params] [type params] [instance] calli [method] - call method for instance with params (short form: .)");
+            B.AppendLine("[params] [type params] [type] calls [method] - call static method from type with params (short form: :)");
+            B.AppendLine("[params] [type params] [instance] [type] callt [method] - call method from type for instance with params");
             B.AppendLine("******");
+
+            B.AppendLine("exit - exit the app");
+
 
             B.Append(MethodHelp(Methods));
             return B.ToString();
@@ -175,18 +196,31 @@ $@"
 
         }
 
+        /// <summary>
+        /// Returns true if the program must exit
+        /// </summary>
+        public bool Exit
+        {
+            get; private set;
+        }
+
+        /// <summary>
+        /// Execute the given input and returns the console output
+        /// </summary>
+        /// <param name="Input">The input to execute</param>
+        /// <returns>The console output</returns>
         public string Execute(string Input)
         {
             try
             {
                 if (Input == null) Input = "";
-                if (Input == "") return ExecuteSingle("");
+                if (Input == "") return ExecuteSingle(new string[] { "" }.ToList());
 
-                var Lines = SplitLines(Input);
+                var Lines = Split(Input);
                 string Last = "";
                 foreach (var L in Lines)
                 {
-                    Last = ExecuteSingle(L.Trim());
+                    Last = ExecuteSingle(L);
                 }
                 return Last;
             }
@@ -195,7 +229,7 @@ $@"
                 return
                     $@"*****************
 Exception:
-{ex.GetAllExceptions().Select(x => x.GetType().Name + " - " + x.Message + "-->").Aggregate("", (a, b) => a + "\n\r" + b, x => x)}";
+{ex.GetAllExceptions().Select(x => x.GetType().Name + " - " + x.Message + x.StackTrace + "-->").Aggregate("", (a, b) => a + "\n\r" + b, x => x)}";
             }
         }
 
@@ -230,81 +264,157 @@ Exception:
             }
         }
 
-        private static MethodBase SolveMethod(IEnumerable<MethodBase> Methods, string MethodName, int? ParamCount, int? TypeCount, Stack<object> ParamStack, out object[] Params)
+        private static MethodBase SolveMethod(IEnumerable<MethodBase> Methods, string MethodName, Stack<object> ParamStack, out object[] Params)
         {
-            Methods = Methods.Where(x => x.Name == MethodName);
-            if (Methods.Count() == 1)
-            {
-                var M = Methods.First();
-                if (ParamCount.HasValue && ParamCount.Value != M.GetParameters().Length)
-                    throw new ArgumentException($"The argument count for the method {MethodName} ({M.GetParameters().Length}) is not equal to {ParamCount}");
 
-                M = SolveGenericMethod(M, ParamStack);
-                Params = GetStackParams(M.GetParameters().Length, ParamStack);
-                return M;
-            }
+            Methods = Methods.Where(x => x.Name.ToLowerInvariant() == MethodName.ToLowerInvariant());
+
             if (Methods.Any() == false)
                 throw new ArgumentException($"The method {MethodName} was not found");
 
-            if (ParamCount == null)
-                throw new ArgumentException
-                    ($"The method {MethodName} have multiple overloads that cannot be solved. Specify {Methods.Select(x => x.GetParameters().Length).Aggregate("", (a, b) => a + ", " + b, x => x)} parameters count");
+            bool Generic;
+            if (Methods.Any(x => x.IsGenericMethod))
+                Generic = true;
+            else
+                Generic = false;
 
-
-            Methods = Methods.Where(x => x.GetParameters().Length == ParamCount);
-
-            var TypeArgumentCounts = Methods.Select(x => x.GetGenericArguments()).GroupBy(x => x.Length).Select(x => (int?)x.Key);
-            if (TypeCount == null)
+            Type[] typeParams = null;
+            if (Generic)
             {
-                TypeCount = TypeArgumentCounts.SingleOrDefault();
+                typeParams = GetStackParams(ParamStack).Cast<Type>().ToArray();
+                Methods = Methods.Where(x => x.GetGenericArguments().Length == typeParams.Length);
             }
 
-            if (TypeCount == null)
-                throw new ArgumentException($"Could not determine the type argument count for the method {MethodName}, use {TypeArgumentCounts.Aggregate("", (a, b) => a + ", " + b, x => x)}");
+            if (Methods.All(x => x.GetParameters().Length == 0))
+                Params = new object[0];
+            else
+                Params = GetStackParams(ParamStack).ToArray();
 
-            var Types = GetStackParams(TypeCount.Value, ParamStack).Cast<Type>();
-
-            Params = GetStackParams(ParamCount.Value, ParamStack);
+            int paramLenght = Params.Length;
+            Methods = Methods.Where(x => x.GetParameters().Length == paramLenght);
 
 
             if (Methods.Count() > 1)
-                throw new ArgumentException($"The method {MethodName} with parameter count {ParamCount} have multiple overloads that cannot be solved");
+                throw new ArgumentException($"The method {MethodName} with parameter count {paramLenght} have multiple overloads that cannot be solved");
             else if (!Methods.Any())
-                throw new ArgumentException($"The method {MethodName} with parameter count {ParamCount} was not found");
+                throw new ArgumentException($"The method {MethodName} with parameter count {paramLenght} was not found");
 
             var Result = Methods.Single();
             if (Result.IsGenericMethodDefinition)
             {
-                Result = ((MethodInfo)Result).MakeGenericMethod(Types.ToArray());
+                Result = ((MethodInfo)Result).MakeGenericMethod(typeParams);
             }
             return Result;
         }
 
-        string Call(string[] Words, Type Type, object Instance)
+        string Call(IReadOnlyList<string> Words, Type Type, object Instance)
         {
             object[] Params;
-            var Method = SolveMethod(Type.GetMethods(), Words[1], Words.Length >= 3 ? (int?)int.Parse(Words[2]) : null, Words.Length >= 4 ? (int?)int.Parse(Words[4]) : null, Stack, out Params);
+            var Method = SolveMethod(Type.GetMethods(), Words[1], Stack, out Params);
 
             return InvokeMethod(Method, Instance, Params.ToArray());
 
         }
-        string New(string[] Words, Type Type)
+        string New(IReadOnlyList<string> Words, Type Type)
         {
             object[] Params;
-            var Method = SolveMethod(Type.GetConstructors(), ".ctor", Words.Length >= 2 ? (int?)int.Parse(Words[1]) : null, 0, Stack, out Params);
+            var Method = SolveMethod(Type.GetConstructors(), ".ctor", Stack, out Params);
             return InvokeMethod(Method, null, Params.ToArray());
         }
 
-        string ExecuteSingle(string Input)
+        string CreateArray(IReadOnlyList<string> Words, Type Type)
         {
-            if (Input == "") return Help();
+            var Params = GetStackParams(Stack);
 
-            var Words = Split(Input);
+            var Instance = Array.CreateInstance(Type, Params.Length);
+            for (int i = 0; i < Params.Length; i++)
+            {
+                Instance.SetValue(Params[i], i);
+            }
+            Stack.Push(Instance);
+            return $"array[{Params.Length}]";
+        }
+
+        string ExecuteSingle(List<string> Words)
+        {
+            if (Words[0] == "exit")
+            {
+                Exit = true;
+                return "bye";
+            }
+
+            {
+                //Parse numbers;
+                decimal value;
+                if (decimal.TryParse(Words[0], out value))
+                {
+                    if (Math.Round(value) == value)
+                        Stack.Push((int)value);
+                    else
+                        Stack.Push((float)value);
+                    return value.ToString();
+                }
+            }
+
+            //Shortcuts:
+            {
+                if (Words[0] == "?" || Words[0] == "") return Help();
+                if (Words[0].StartsWith("."))
+                {
+                    Words.Add(Words[0].Substring(1));
+                    Words[0] = "calli";
+                }
+                if (Words[0].StartsWith(":"))
+                {
+                    Words.Add(Words[0].Substring(1));
+                    Words[0] = "calls";
+                }
+                if (Words[0].StartsWith("#"))
+                {
+                    Words.Add(Words[0].Substring(1));
+                    Words[0] = "type";
+                }
+                if (Words[0].StartsWith("!"))
+                {
+                    Words.Add(Words[0].Substring(1));
+                    Words[0] = "new";
+                }
+                if (Words[0].StartsWith("$"))
+                {
+                    Words.Add(Words[0].Substring(1));
+                    Words[0] = "array";
+                }
+                if (Words[0].StartsWith(">"))
+                {
+                    Words.Add(Words[0].Substring(1));
+                    Words[0] = "store";
+                }
+                if (Words[0].StartsWith("<"))
+                {
+                    Words.Add(Words[0].Substring(1));
+                    Words[0] = "load";
+                }
+            }
+
 
 
             switch (Words[0])
             {
-
+                case "(":
+                    {
+                        Stack.Push(StackOp.Begin);
+                        return "";
+                    }
+                case ")":
+                    {
+                        Stack.Push(StackOp.End);
+                        return "";
+                    }
+                case "current":
+                    {
+                        Stack.Push(Instance);
+                        return PrintValue(Instance);
+                    }
                 case "int":
                     {
                         Stack.Push(FromString((string)Words[1], typeof(int)));
@@ -333,9 +443,21 @@ Exception:
                         Stack.Push(Type);
                         return PrintType(Type);
                     }
+                case "array":
+                    {
+                        if (Words.Count >= 2)
+                            return CreateArray(Words, GetType(Words[1]));
+
+                        else
+                            return CreateArray(Words, (Type)Stack.Pop());
+                    }
                 case "new":
                     {
-                        return New(Words, (Type)Stack.Pop());
+                        if (Words.Count >= 2)
+                            return New(Words, GetType(Words[1]));
+
+                        else
+                            return New(Words, (Type)Stack.Pop());
                     }
                 case "calli":
                     {
@@ -360,9 +482,10 @@ Exception:
                     {
                         var Type = (Type)Stack.Pop();
                         var Value = (string)Stack.Pop();
-                        Stack.Push(FromString(Value, Type));
+                        var Result = FromString(Value, Type);
+                        Stack.Push(Result);
+                        return PrintValue(Result);
                     }
-                    return "ok";
                 case "types":
                     return Types.Select(x => x.FullName + Environment.NewLine).Aggregate("", (a, b) => a + b, x => x);
                 case "type":
@@ -379,7 +502,7 @@ Exception:
                 case "stack":
                     return
                         "Stack count: " + Stack.Count + Environment.NewLine +
-                        Stack.Select(x => PrintValue(x) + Environment.NewLine).Aggregate("", (a, b) => a + b, x => x);
+                        Stack.Select(x => PrintValue(x) + Environment.NewLine + "____________" + Environment.NewLine).Aggregate("", (a, b) => a + b, x => x);
                 case "dup":
                     Stack.Push(Stack.Peek());
                     return "ok";
@@ -392,11 +515,11 @@ Exception:
 
             }
 
-            return ExecuteMethod(Input);
-
-
+            return ExecuteMethod(Words[0]);
 
         }
+
+
 
         private object[] GetStackParams(int Count)
         {
@@ -410,6 +533,32 @@ Exception:
                 Params.Insert(0, Stack.Pop());
             }
             return Params.ToArray();
+        }
+
+        private static object[] GetStackParams(Stack<object> Stack)
+        {
+            var End = Stack.Pop();
+            if (!object.Equals(End, StackOp.End))
+                throw new ArgumentException("')' operator expected");
+
+            int balance = 0;
+
+            List<object> result = new List<object>();
+            while (true)
+            {
+                var value = Stack.Pop();
+                if (object.Equals(value, StackOp.Begin))
+                    balance--;
+                else if (object.Equals(value, StackOp.End))
+                    balance++;
+                else
+                    result.Insert(0, value);
+
+                if (balance < 0)
+                    break;
+
+            }
+            return result.ToArray();
         }
 
         private string PrintValue(object Value)
@@ -435,12 +584,12 @@ Exception:
 
         private string ExecuteMethod(string Input)
         {
-            var Words = Split(Input);
+            var Words = Split(Input)[0].ToArray();
 
             bool InstanceCall = Words[0].StartsWith(".");
             var MethodName = InstanceCall ? Words[0].Substring(1) : Words[0];
 
-            var Method = Methods.Where(x => x.Name == MethodName).FirstOrDefault();
+            var Method = Methods.Where(x => x.Name.ToLowerInvariant() == MethodName.ToLowerInvariant()).FirstOrDefault();
 
             if (Method == null)
                 return $"Method {MethodName} not found";

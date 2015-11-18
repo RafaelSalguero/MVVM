@@ -71,5 +71,10 @@ namespace Tonic
         {
             return GetEnumerator();
         }
+
+        public override string ToString()
+        {
+            return original.ToString();
+        }
     }
 }
