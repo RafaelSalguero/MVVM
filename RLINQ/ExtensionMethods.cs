@@ -162,5 +162,15 @@ namespace Tonic
             }
             return exceptions;
         }
+
+        /// <summary>
+        /// Gets whether this type is a Nullable&lt;&gt;
+        /// </summary>
+        /// <param name="Type"></param>
+        /// <returns></returns>
+        public static bool IsNullable(this Type Type)
+        {
+            return Type.IsGenericTypeDefinition && Type.GetGenericTypeDefinition() == typeof(Nullable<>);
+        }
     }
 }

@@ -34,6 +34,14 @@ namespace RLinq.Test
         }
 
         [TestMethod]
+        public void RLinqFormat()
+        {
+            string Sql = "select \"Extent1\".\"nombre\" from \"public\".\"cliente\" AS \"Extent1\" ";
+            var R = Tonic.RLinq.FormatSql(Sql);
+
+        }
+
+        [TestMethod]
         public void RLinqDecompileMin()
         {
             var items = new[]

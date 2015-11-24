@@ -14,6 +14,203 @@ namespace Tonic
     /// </summary>
     public static class RLinq
     {
+        static string SqlToString(object Value)
+        {
+            if (Value == null)
+            {
+                return "null";
+            }
+
+            var T = Value.GetType();
+            if (T.IsGenericType && T.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                Value = ((dynamic)Value).Value;
+            }
+
+            if (Value is DateTime)
+            {
+                var aux = (DateTime)Value;
+                return aux.ToString("yyyy-MM-dd");
+            }
+            else
+                return Value.ToString();
+        }
+
+        /// <summary>
+        /// Format an SQL statement onto a human friendly format
+        /// </summary>
+        /// <param name="Sql"></param>
+        /// <returns></returns>
+        public static string FormatSql(string Sql, params object[] Params)
+        {
+            var Extents = new Dictionary<string, string>();
+            var Replaces = new Dictionary<string, string>();
+            StringBuilder B = new StringBuilder();
+            int indent = 0;
+            int subindent = 0;
+
+            for (int i = 0; i < Params.Length; i++)
+            {
+                Replaces.Add($"@p__linq__{i}", SqlToString(Params[i]));
+            }
+
+            Action<int> NewLineI = (indentX) =>
+            {
+                if (B.Length > 0 && B[B.Length - 1] != '\n')
+                {
+                    B.AppendLine();
+                    B.Append(' ', 3 * (indentX));
+                }
+            };
+            Action NewLine = () =>
+            {
+                NewLineI(indent + subindent);
+            };
+
+
+            Func<int, string, bool> OnWordI = (i, word) =>
+             {
+                 if (word.Length > i || i >= Sql.Length)
+                     return false;
+                 else
+                 {
+                     for (int j = i; j > i - word.Length; j--)
+                     {
+                         if (char.ToLowerInvariant(Sql[j]) != char.ToLowerInvariant(word[j - i + word.Length - 1]))
+                             return false;
+                     }
+                     return true;
+                 }
+             };
+
+            Func<int, string> GetLastWord = (index) =>
+             {
+                 int i;
+                 for (i = index; i >= 0; i--)
+                 {
+                     if (Sql[i] == ' ')
+                     {
+                         break;
+                     }
+                 }
+                 return Sql.Substring(i + 1, index - i);
+             };
+
+            Func<int, string> GetLastDotWord = (index) =>
+              {
+                  int i;
+                  for (i = index; i >= 0; i--)
+                  {
+                      if (Sql[i] == '.')
+                      {
+                          break;
+                      }
+                  }
+                  return Sql.Substring(i + 1, index - i).Trim('"');
+              };
+
+            Func<int, string> GetNextWord = (index) =>
+            {
+                int i;
+                for (i = index; i < Sql.Length; i++)
+                {
+                    if (Sql[i] == ' ')
+                    {
+                        break;
+                    }
+                }
+                return Sql.Substring(index, i - index);
+            };
+
+
+
+
+            var jumpWords = new[] { "where", "join", "from", "inner join" };
+
+            var indents = new Stack<int>();
+            for (int i = 0; i < Sql.Length; i++)
+            {
+                Func<string, bool> OnWord = x => OnWordI(i, x);
+
+                var c = Sql[i];
+                if (c == ')')
+                {
+                    indent--;
+                    NewLineI(indents.Pop());
+                    subindent = 0;
+                }
+                else if (c == '(')
+                {
+                    NewLine();
+                    indents.Push(indent + subindent);
+                }
+                else if (jumpWords.Select(x => OnWordI(i + x.Length, x)).Any(x => x))
+                {
+                    NewLine();
+                }
+
+                B.Append(c);
+                if (c == ',')
+                {
+                    NewLine();
+                }
+                else if (c == '(')
+                {
+                    indent++;
+                    NewLine();
+                }
+                else if (OnWord("and"))
+                {
+                    NewLine();
+                }
+                else if (jumpWords.Select(x => OnWord(x)).Where(x => x).Any(x => x))
+                {
+                    subindent++;
+                    NewLine();
+                }
+
+                var extent = " as \"Extent";
+                if (OnWord(extent))
+                {
+                    var Name = GetLastWord(i - extent.Length);
+                    var Extent = GetNextWord(i - "Extent".Length);
+                    var N = Name.Substring(Name.LastIndexOf('.') + 2).Trim('"');
+                    var FriendlyE = "\""
+                        + N.Substring(0, Math.Min(3, N.Length)) + "_e" + Extent.Substring("Extent".Length + 1).Trim('"')
+                        + "\"";
+
+                    var Friendly =
+                     N.Substring(0, Math.Min(3, N.Length));
+
+                    Extents.Add(Extent, Name);
+
+                    if (Replaces.ContainsValue(Friendly))
+                        Replaces.Add(Extent, FriendlyE);
+                    else
+                        Replaces.Add(Extent, Friendly);
+                }
+            }
+
+            StringBuilder Comments = new StringBuilder();
+            foreach (var ex in Extents)
+            {
+                Comments.Append("-- ");
+                Comments.Append(ex.Key);
+                Comments.Append(" == ");
+                Comments.Append(ex.Value);
+                Comments.AppendLine();
+            }
+
+            Comments.AppendLine();
+            Comments.Append(B.ToString());
+
+            foreach (var R in Replaces)
+            {
+                Comments.Replace(R.Key, R.Value);
+            }
+            return Comments.ToString();
+        }
+
         /// <summary>
         /// Gets whether a collection implements the ICollection(T) interface 
         /// </summary>
@@ -107,6 +304,7 @@ namespace Tonic
         }
 
 
+
         /// <summary>
         /// Calls a given static method 
         /// </summary>
@@ -121,7 +319,16 @@ namespace Tonic
                 collectionType
                 .GetInterfaces()
                 .Where(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(ICollection<>))
-                .First();
+                .FirstOrDefault();
+
+            if (IQueryable == null)
+            {
+                IQueryable =
+                collectionType
+                .GetInterfaces()
+                .Where(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                .FirstOrDefault();
+            }
 
             var ElementType = IQueryable.GetGenericArguments()[0];
 
@@ -185,40 +392,47 @@ namespace Tonic
         }
 
         /// <summary>
-        /// Calls the where method
+        /// Calls the first LINQ method via reflection
         /// </summary>
-        /// <param name="Query"></param>
-        /// <param name="Predicate"></param>
-        /// <returns></returns>
-        public static IQueryable Where(IQueryable Query, Expression Predicate)
+        public static object First(this IQueryable Query)
+        {
+            return CallStatic(Query, x => x.First());
+        }
+
+        /// <summary>
+        /// Calls the first LINQ method via reflection
+        /// </summary>
+        public static object First(this IEnumerable Query)
+        {
+            return CallStatic(Query, x => x.First());
+        }
+
+        /// <summary>
+        /// Calls the first LINQ method via reflection
+        /// </summary>
+        public static T First<T>(this IEnumerable<T> Query)
+        {
+            return Enumerable.First(Query);
+        }
+
+
+
+        /// <summary>
+        /// Calls the where LINQ method via reflection
+        /// </summary>
+        public static IQueryable Where(this IQueryable Query, Expression Predicate)
         {
             return (IQueryable)CallStatic(Query, x => x.Where(y => y == 1), Predicate);
         }
 
         /// <summary>
-        /// Returns an expression that test each property equality to a given value
+        /// Calls the where LINQ method via reflection
         /// </summary>
-        /// <param name="PropertyValues">A collection that matches the property and the values to test</param>
-        /// <returns></returns>
-        public static Expression PredicateEqual(Type ElementType, IEnumerable<Tuple<string, object>> PropertyValues)
+        public static IEnumerable Where(this IEnumerable Query, Expression Predicate)
         {
-            var Instance = Expression.Parameter(ElementType);
-            Expression REx = null;
-            foreach (var P in PropertyValues)
-            {
-                var Property = Expression.Property(Instance, P.Item1);
-                var Value = Expression.Constant(P.Item2);
-
-                var Eq = Expression.Equal(Property, Value);
-                if (REx == null)
-                    REx = Eq;
-                else
-                    REx = Expression.And(REx, Eq);
-            }
-
-            var Lambda = Expression.Lambda(REx, Instance);
-            return Lambda;
+            return Where(Query.AsQueryable(), Predicate);
         }
+
 
         /// <summary>
         /// Calls the Add method from an object that implements the IQuerable(T) method
@@ -306,11 +520,18 @@ namespace Tonic
             return ret;
         }
 
+        /// <summary>
+        /// ToList proxy method
+        /// </summary>
+        public static List<T> ToList<T>(this IEnumerable<T> Collection)
+        {
+            return Enumerable.ToList(Collection);
+        }
 
         /// <summary>
-        /// Calls the generic ToList method
+        /// Calls the generic ToList method via reflection
         /// </summary>
-        public static IEnumerable ToList(IEnumerable Collection)
+        public static IEnumerable ToList(this IEnumerable Collection)
         {
             var EnumerableInterface =
                    Collection.GetType()

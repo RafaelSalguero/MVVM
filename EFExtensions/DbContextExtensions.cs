@@ -83,7 +83,7 @@ namespace Tonic.EF
         public static T GetEntity<T>(this DbSet<T> Set, T DetachedEntity) where T : class
         {
             var PK = GetPrimaryKey(DetachedEntity);
-            var Predicate = Tonic.RLinq.PredicateEqual(typeof(T), PK);
+            var Predicate = Tonic.PredicateBuilder.PredicateEqual(typeof(T), PK);
 
             var Where = Tonic.RLinq.Where(Set, Predicate);
 

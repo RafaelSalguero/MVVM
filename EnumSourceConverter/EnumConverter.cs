@@ -67,7 +67,7 @@ namespace Tonic.UI
             if (Value == null) return null;
             var Type = Value.GetType();
             var Names = GetEnumNames(Type);
-            return Names.Where(x => object.Equals(x.Item2, Value)).First().Item1;
+            return Names.Where(x => object.Equals(x.Item2, Value)).FirstOrDefault()?.Item1 ?? Value.ToString();
         }
 
         public static object StringToEnum(string Value, Type Type)

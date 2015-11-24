@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,32 +16,42 @@ namespace Tonic.MVVM
     /// </summary>
     public class ViewViewModelDependency
     {
+
         /// <summary>
         /// Create a new model dependency
         /// </summary>
         /// <param name="ViewConstructor">The view factory</param>
         /// <param name="ViewModelPredicate">A delegate that test if a view model instance can be paired with the given view</param>
-        public ViewViewModelDependency(Func<FrameworkElement> ViewConstructor, Func<object, bool> ViewModelPredicate)
+        /// <param name="Description">Debug description</param>
+        public ViewViewModelDependency(Func<FrameworkElement> ViewConstructor, Func<object, bool> ViewModelPredicate, string Description)
         {
+            this.Description = Description;
             this.ViewModelPredicate = ViewModelPredicate;
             this.ViewConstructor = ViewConstructor;
+        }
+
+        readonly string Description;
+
+        public override string ToString()
+        {
+            return Description;
         }
 
         /// <summary>
         /// Create a dependency from a view type and a view model type
         /// </summary>
-        public ViewViewModelDependency Create(Type View, Type ViewModel)
+        public static ViewViewModelDependency Create(Type View, Type ViewModel)
         {
-            return new ViewViewModelDependency(() => (FrameworkElement)Activator.CreateInstance(View), x => ViewModel.IsAssignableFrom(x.GetType()));
+            return new ViewViewModelDependency(() => (FrameworkElement)Activator.CreateInstance(View), x => ViewModel.IsAssignableFrom(x.GetType()), $"view: {View?.FullName ?? "(null)"}, viewmodel: {ViewModel?.FullName ?? "(null)"}");
         }
 
 
         /// <summary>
         /// Create a dependency from a view factory and a view model type
         /// </summary>
-        public ViewViewModelDependency Create<TViewModel>(Func<FrameworkElement> ViewConstructor)
+        public static ViewViewModelDependency Create<TViewModel>(Func<FrameworkElement> ViewConstructor)
         {
-            return new ViewViewModelDependency(ViewConstructor, x => typeof(TViewModel).IsAssignableFrom(x.GetType()));
+            return new ViewViewModelDependency(() => ViewConstructor(), x => typeof(TViewModel).IsAssignableFrom(x.GetType()), $"view: (custom), viewmodel: {typeof(TViewModel).FullName }");
         }
 
         /// <summary>
@@ -86,7 +97,7 @@ namespace Tonic.MVVM
         /// <param name="Dependency"></param>
         public void Add(VVMPair Dependency)
         {
-            dependencies.Add(new ViewViewModelDependency(() => (FrameworkElement)Activator.CreateInstance(Dependency.View), o => o.GetType() == Dependency.ViewModel));
+            dependencies.Add(ViewViewModelDependency.Create(Dependency.View, Dependency.ViewModel));
         }
 
         private FrameworkElement CreateView(object ViewModel)

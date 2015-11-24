@@ -40,6 +40,7 @@ namespace Tonic.UI
             else if (value is String)
             {
                 _binding = new Binding((string)value);
+                _binding.Mode = BindingMode.OneWay;
             }
             else
                 throw new ArgumentException("Value must be an enum type, a Binding or an string");

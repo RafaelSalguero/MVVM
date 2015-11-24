@@ -7,8 +7,17 @@ using System.Windows.Input;
 
 namespace Tonic.MVVM
 {
-    class DelegateCommand : ICommand
+    /// <summary>
+    /// Un comando que expone un delegado como accion. Considere usar la extension dinamica CommandsExtension en lugar de exponer propiedades como ICommands
+    /// </summary>
+    public class DelegateCommand : ICommand
     {
+
+        /// <summary>
+        /// Crea un nuevo DelegateCommand
+        /// </summary>
+        /// <param name="Action">La acción que se realizará al ejecutar el comando</param>
+        /// <param name="CanExecute">Determina si el comando se puede ejecutar</param>
         public DelegateCommand(Action<object> Action, Func<object, bool> CanExecute)
         {
             this.action = Action;
@@ -24,16 +33,40 @@ namespace Tonic.MVVM
 
             }
         }
+
+        /// <summary>
+        /// Crea un nuevo DelegateCommand
+        /// </summary>
+        /// <param name="Action">La acción que se realizará al ejecutar el comando</param>
+        /// <param name="CanExecute">Determina si el comando se puede ejecutar</param>
         public DelegateCommand(Action Action, Func<bool> CanExecute) : this(o => Action(), o => CanExecute()) { }
 
         TaskScheduler UiThread;
 
+        /// <summary>
+        /// Crea un nuevo DelegateCommand
+        /// </summary>
+        /// <param name="Action">La acción que se realizará al ejecutar el comando</param>
         public DelegateCommand(Action Action) : this(o => Action(), o => true) { }
 
+        /// <summary>
+        /// Crea un nuevo DelegateCommand
+        /// </summary>
+        /// <param name="Action">La acción que se realizará al ejecutar el comando</param>
+        public DelegateCommand(Action<object> Action) : this(Action, o => true) { }
+
         private readonly Action<object> action;
+
+        /// <summary>
+        /// Se dispara al llamar al metodo RaiseCanExecuteChanged
+        /// </summary>
         public event EventHandler CanExecuteChanged;
 
         private readonly Func<object, bool> canExecute;
+
+        /// <summary>
+        /// Dispara el evento RaiseCanExecuteChanged en el hilo en el que el comando fue creado
+        /// </summary>
         public void RaiseCanExecuteChanged()
         {
             //Ejecuta el CanExecute en el hilo de la interfaz de usuario
@@ -57,6 +90,10 @@ namespace Tonic.MVVM
             return canExecute(parameter);
         }
 
+        /// <summary>
+        /// Ejecuta el comando siempre y cuando canExecute sea true
+        /// </summary>
+        /// <param name="parameter"></param>
         public void Execute(object parameter)
         {
             if (canExecute(parameter))

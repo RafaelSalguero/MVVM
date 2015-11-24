@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MethodDecompiler.cs" />
+    <Compile Include="PredicateBuilder.cs" />
     <Compile Include="Query\ClientServerQuery.cs" />
     <Compile Include="Query\DecompiledQuery.cs" />
     <Compile Include="DecompilerVisitor.cs" />

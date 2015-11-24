@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseViewModel.cs" />
+    <Compile Include="CollectionExtensions.cs" />
     <Compile Include="CommandCollection.cs" />
     <Compile Include="CommandsViewModel.cs" />
     <Compile Include="CommitViewModel.cs" />

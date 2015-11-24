@@ -10,12 +10,14 @@ namespace Tonic.UI
 {
     public class EnumBinding : MarkupExtension
     {
-        public EnumBinding (string Path)
+        public EnumBinding(string Path)
         {
             this.path = Path;
             this.binding = new Binding(Path);
             binding.Converter = new EnumConverter();
         }
+
+        public EnumBinding() : this("") { }
         private readonly string path;
         private readonly Binding binding;
 

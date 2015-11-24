@@ -68,8 +68,10 @@ namespace Tonic.MVVM
             HashSet<Tuple<Type, Type>> usedPairs = new HashSet<Tuple<Type, Type>>();
 
             foreach (var Group in vTypes)
+            {
                 foreach (var View in Group)
-                    if (vmTypes.Any())
+                {
+                    if (vmTypes[Group.Key].Any())
                         foreach (var ViewModel in vmTypes[Group.Key])
                         {
                             ret.Add(new VVMPair(View, ViewModel, Group.Key));
@@ -78,16 +80,23 @@ namespace Tonic.MVVM
                         }
                     else
                         ret.Add(new VVMPair(View, null, Group.Key));
+                }
+            }
 
             foreach (var Group in vmTypes)
+            {
                 foreach (var ViewModel in Group)
+                {
                     if (vTypes[Group.Key].Any())
                         foreach (var View in vTypes[Group.Key])
+                        {
                             if (!usedPairs.Contains(Tuple.Create(View, ViewModel)))
                                 ret.Add(new VVMPair(View, ViewModel, Group.Key));
-                            else
-                                ret.Add(new VVMPair(null, ViewModel, Group.Key));
-
+                        }
+                    else
+                        ret.Add(new VVMPair(null, ViewModel, Group.Key));
+                }
+            }
 
 
             return ret;
