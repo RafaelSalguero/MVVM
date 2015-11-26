@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 using OfficeOpenXml;
 namespace Tonic.Excel.Printers
 {
+    /// <summary>
+    /// Objeto que es capaz de imprimir en una hoja de excel
+    /// </summary>
     public interface IPrinter
     {
         /// <summary>
-        /// Print the given data on the worksheet and returns startY + the number of printed rows
+        /// Imprime la informacion del objeto en una hoja de trabajo de excel, devuelve startY mas el numero de filas impresas
         /// </summary>
         int Print(ExcelWorksheet ws, int startX, int startY);
     }

@@ -8,20 +8,23 @@ using OfficeOpenXml;
 namespace Tonic.Excel.Printers
 {
     /// <summary>
-    /// Prints other printers in vertical order
+    /// Imprime multiples objetos IPrintes acomodados verticalmente uno debajo del otro
     /// </summary>
-    public class StackPrinter : IPrinter 
+    public class StackPrinter : IPrinter
     {
-        public StackPrinter (IEnumerable <IPrinter > Printers)
+        /// <summary>
+        /// Crea un StackPrinter con multiples objetos IPrinter
+        /// </summary>
+        public StackPrinter(IEnumerable<IPrinter> Printers)
         {
             this.printers = Printers;
         }
         private readonly IEnumerable<IPrinter> printers;
 
-        public int Print(ExcelWorksheet ws, int startX, int startY)
+        int IPrinter.Print(ExcelWorksheet ws, int startX, int startY)
         {
             int y = startY;
-            foreach(var p in printers )
+            foreach (var p in printers)
             {
                 y = p.Print(ws, startX, y);
             }

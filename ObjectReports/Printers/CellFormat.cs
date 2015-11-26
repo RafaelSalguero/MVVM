@@ -8,12 +8,29 @@ using OfficeOpenXml.Style;
 
 namespace Tonic.Excel.Printers
 {
+    /// <summary>
+    /// Especifica el formato de una celda
+    /// </summary>
     public class CellFormat
     {
+        /// <summary>
+        /// Color de fondo
+        /// </summary>
         public Color Background { get; set; } = Colors.White;
+
+        /// <summary>
+        /// Color de fuente
+        /// </summary>
         public Color Foreground { get; set; } = Colors.Black;
 
+        /// <summary>
+        /// Negritas
+        /// </summary>
         public bool Bold { get; set; }
+
+        /// <summary>
+        /// Oscurecer la celdas impares
+        /// </summary>
         public bool GreenBar { get; set; }
 
         private static System.Drawing.Color FromColor(Color C)
@@ -21,6 +38,11 @@ namespace Tonic.Excel.Printers
             return System.Drawing.Color.FromArgb(C.A, C.R, C.G, C.B);
         }
 
+        /// <summary>
+        /// Llena un objeto ExcelStyle con los parametros del formato de la celda
+        /// </summary>
+        /// <param name="Style">Objeto a llenar</param>
+        /// <param name="Greenbar">False para ignorar el parametro greenbar</param>
         public void LoadStyle(ExcelStyle Style, bool Greenbar)
         {
             var Format = this;

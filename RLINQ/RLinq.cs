@@ -76,7 +76,7 @@ namespace Tonic
                  {
                      for (int j = i; j > i - word.Length; j--)
                      {
-                         if (char.ToLowerInvariant(Sql[j]) != char.ToLowerInvariant(word[j - i + word.Length - 1]))
+                         if (Sql[j] != word[j - i + word.Length - 1])
                              return false;
                      }
                      return true;
@@ -125,7 +125,7 @@ namespace Tonic
 
 
 
-            var jumpWords = new[] { "where", "join", "from", "inner join" };
+            var jumpWords = new[] { "WHERE", "JOIN", "FROM" };
 
             var indents = new Stack<int>();
             for (int i = 0; i < Sql.Length; i++)
@@ -394,7 +394,7 @@ namespace Tonic
         /// <summary>
         /// Calls the first LINQ method via reflection
         /// </summary>
-        public static object First(this IQueryable Query)
+        public static object First(IQueryable Query)
         {
             return CallStatic(Query, x => x.First());
         }
@@ -402,25 +402,18 @@ namespace Tonic
         /// <summary>
         /// Calls the first LINQ method via reflection
         /// </summary>
-        public static object First(this IEnumerable Query)
+        public static object First(IEnumerable Query)
         {
             return CallStatic(Query, x => x.First());
         }
 
-        /// <summary>
-        /// Calls the first LINQ method via reflection
-        /// </summary>
-        public static T First<T>(this IEnumerable<T> Query)
-        {
-            return Enumerable.First(Query);
-        }
 
 
 
         /// <summary>
         /// Calls the where LINQ method via reflection
         /// </summary>
-        public static IQueryable Where(this IQueryable Query, Expression Predicate)
+        public static IQueryable Where(IQueryable Query, Expression Predicate)
         {
             return (IQueryable)CallStatic(Query, x => x.Where(y => y == 1), Predicate);
         }
@@ -428,7 +421,7 @@ namespace Tonic
         /// <summary>
         /// Calls the where LINQ method via reflection
         /// </summary>
-        public static IEnumerable Where(this IEnumerable Query, Expression Predicate)
+        public static IEnumerable Where(IEnumerable Query, Expression Predicate)
         {
             return Where(Query.AsQueryable(), Predicate);
         }
@@ -520,18 +513,12 @@ namespace Tonic
             return ret;
         }
 
-        /// <summary>
-        /// ToList proxy method
-        /// </summary>
-        public static List<T> ToList<T>(this IEnumerable<T> Collection)
-        {
-            return Enumerable.ToList(Collection);
-        }
+
 
         /// <summary>
         /// Calls the generic ToList method via reflection
         /// </summary>
-        public static IEnumerable ToList(this IEnumerable Collection)
+        public static IEnumerable ToList(IEnumerable Collection)
         {
             var EnumerableInterface =
                    Collection.GetType()

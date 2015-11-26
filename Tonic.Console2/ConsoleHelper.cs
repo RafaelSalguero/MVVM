@@ -74,6 +74,7 @@ namespace Tonic.Console
         Dictionary<string, object> Locals = new Dictionary<string, object>();
         List<Type> Types = new List<Type>();
 
+        public event EventHandler<LogEventArgs> LogEvent;
 
         /// <summary>
         /// The instance that will be passed to named methods
@@ -99,7 +100,14 @@ namespace Tonic.Console
             Types.Add(typeof(System.IO.File));
         }
 
-
+        /// <summary>
+        /// Raise the LogEvent
+        /// </summary>
+        /// <param name="Data"></param>
+        public void Log(string Data)
+        {
+            LogEvent?.Invoke(this, new LogEventArgs(Data));
+        }
 
         /// <summary>
         /// Load all types from the given assembly
@@ -240,29 +248,23 @@ $@"
             get; private set;
         }
 
-        public Task<string> Execute(string Input)
-        {
-            return Execute(Input, null);
-        }
         /// <summary>
         /// Execute the given input and returns the console output
         /// </summary>
         /// <param name="Input">The input to execute</param>
         /// <returns>The console output</returns>
-        public async Task<string> Execute(string Input, Action<string> Log)
+        public async Task<string> Execute(string Input)
         {
-            if (Log == null) Log = x => { };
-
             try
             {
                 if (Input == null) Input = "";
-                if (Input == "") return await ExecuteSingle(new string[] { "" }.ToList(), Log);
+                if (Input == "") return await ExecuteSingle(new string[] { "" }.ToList());
 
                 var Lines = Split(Input);
                 string Last = "";
                 foreach (var L in Lines)
                 {
-                    Last = await ExecuteSingle(L, Log);
+                    Last = await ExecuteSingle(L);
                 }
                 return Last;
             }
@@ -377,7 +379,7 @@ Exception:
             return $"array[{Params.Length}]";
         }
 
-        async Task<string> ExecuteSingle(List<string> Words, Action<string> Log)
+        async Task<string> ExecuteSingle(List<string> Words)
         {
             if (Words[0] == "exit")
             {

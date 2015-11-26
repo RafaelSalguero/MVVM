@@ -166,7 +166,7 @@ namespace Tonic.MVVM.Extensions
                     default:
                         throw new ArgumentException($"The command for the method '{M.Name}' can't be exposed because it has too many parameters ({P.Length})");
                 }
-                commands.Add(CommandName, Command);
+                commands[CommandName] = Command;
                 inverseDic.Add(M, Command);
             }
 
