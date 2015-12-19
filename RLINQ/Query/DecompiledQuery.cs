@@ -35,12 +35,12 @@ namespace Tonic
 
             public object Execute(Expression expression)
             {
-                return original.Provider.Execute(expression);
+                return original.Provider.Execute(expression.Decompile());
             }
 
             public TResult Execute<TResult>(Expression expression)
             {
-                return original.Provider.Execute<TResult>(expression);
+                return original.Provider.Execute<TResult>(expression.Decompile());
             }
         }
 

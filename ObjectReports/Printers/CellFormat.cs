@@ -16,7 +16,7 @@ namespace Tonic.Excel.Printers
         /// <summary>
         /// Color de fondo
         /// </summary>
-        public Color Background { get; set; } = Colors.White;
+        public Color Background { get; set; } = Colors.Transparent;
 
         /// <summary>
         /// Color de fuente
@@ -33,9 +33,14 @@ namespace Tonic.Excel.Printers
         /// </summary>
         public bool GreenBar { get; set; }
 
-        private static System.Drawing.Color FromColor(Color C)
+        internal static System.Drawing.Color FromColor(Color C)
         {
             return System.Drawing.Color.FromArgb(C.A, C.R, C.G, C.B);
+        }
+
+        internal static Color Darken(Color C)
+        {
+            return Color.Add(Color.Multiply(C, 0.8F), Color.Multiply(Colors.Black, 0.2F));
         }
 
         /// <summary>
@@ -46,19 +51,24 @@ namespace Tonic.Excel.Printers
         public void LoadStyle(ExcelStyle Style, bool Greenbar)
         {
             var Format = this;
+            bool force = false;
             Color Fill = Greenbar ? Color.Add(Color.Multiply(Format.Background, 0.8F), Color.Multiply(Colors.Black, 0.2F)) : Format.Background;
 
             if (Background == Colors.Transparent)
             {
-                Style.Fill.PatternType = ExcelFillStyle.None;
+                if (!force)
+                    Style.Fill.PatternType = ExcelFillStyle.None;
             }
             else
             {
                 Style.Fill.PatternType = ExcelFillStyle.Solid;
                 Style.Fill.BackgroundColor.SetColor(FromColor(Fill));
             }
-            Style.Font.Bold = Format.Bold;
-            Style.Font.Color.SetColor(FromColor(Format.Foreground));
+            if (force || Format.Bold)
+                Style.Font.Bold = Format.Bold;
+
+            if (force || Format.Foreground != Colors.Black)
+                Style.Font.Color.SetColor(FromColor(Format.Foreground));
         }
     }
 }

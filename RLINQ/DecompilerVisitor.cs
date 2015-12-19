@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -18,7 +19,65 @@ namespace Tonic
         {
             var Visitor = new DecompilerVisitor();
             var Ret = Visitor.Visit(Expr);
+
+            //Aplica el expression expander:
+            Ret = new ExpressionExpander.ExpressionExpander().Visit(Ret);
             return Ret;
+        }
+
+        protected override Expression VisitBinary(BinaryExpression node)
+        {
+            //Convert DateTime + TimeSpan to
+            //DbFunctions.AddMilliseconds ( DateTime, DbFunctions.DiffMilliseconds(TimeSpan.Zero, TimeSpan));
+            if (
+                node.NodeType == ExpressionType.Add &&
+                (node.Left.Type == typeof(DateTime) || node.Left.Type == typeof(DateTime?)) &&
+                (node.Right.Type == typeof(TimeSpan) || node.Right.Type == typeof(TimeSpan?))
+                )
+            {
+                var AddMethod = typeof(DbFunctions).GetMethods()
+                    .Where(x => x.Name == nameof(DbFunctions.AddMilliseconds))
+                    .Where(x => x.GetParameters()[0].ParameterType == typeof(DateTime?))
+                    .Single();
+
+                var DiffMethod = typeof(DbFunctions).GetMethods()
+                    .Where(x => x.Name == nameof(DbFunctions.DiffMilliseconds))
+                    .Where(x => x.GetParameters()[0].ParameterType == typeof(TimeSpan?))
+                    .Single();
+
+                var DateOrNull = node.Left;
+                var TimeOrNull = node.Right;
+
+                //Convierte a nullable si los valores no son nullables,
+                //pues esta conversion aunque sea realizada automaticamente por el
+                //compilador no es realizado automaticamente por las expresiones
+                Expression Date, Time;
+                if (DateOrNull.Type == typeof(DateTime))
+                    Date = Expression.Convert(DateOrNull, typeof(DateTime?));
+                else
+                    Date = DateOrNull;
+
+                if (TimeOrNull.Type == typeof(TimeSpan))
+                    Time = Expression.Convert(TimeOrNull, typeof(TimeSpan?));
+                else
+                    Time = TimeOrNull;
+
+                var Zero = Expression.Convert(Expression.Field(null, typeof(TimeSpan), nameof(TimeSpan.Zero)), typeof(TimeSpan?));
+
+                var DiffCall = Expression.Call(DiffMethod, Zero, Time);
+
+                var AddCall = Expression.Call(AddMethod, Date, DiffCall);
+                //Convierte de vuelta a un tipo no nullable si el resultado del nodo original
+                //no era nulable
+                if (node.Type == typeof(DateTime))
+                {
+                    return Expression.Property(AddCall, typeof(DateTime?).GetProperty(nameof(Nullable<double>.Value)));
+                }
+                else
+                    return AddCall;
+
+            }
+            return base.VisitBinary(node);
         }
 
         protected override Expression VisitMethodCall(MethodCallExpression node)

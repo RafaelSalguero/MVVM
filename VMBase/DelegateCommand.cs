@@ -53,6 +53,12 @@ namespace Tonic.MVVM
         /// Crea un nuevo DelegateCommand
         /// </summary>
         /// <param name="Action">La acción que se realizará al ejecutar el comando</param>
+        public DelegateCommand(Func<Task> Action) : this(o => Action(), o => true) { }
+
+        /// <summary>
+        /// Crea un nuevo DelegateCommand
+        /// </summary>
+        /// <param name="Action">La acción que se realizará al ejecutar el comando</param>
         public DelegateCommand(Action<object> Action) : this(Action, o => true) { }
 
         private readonly Action<object> action;

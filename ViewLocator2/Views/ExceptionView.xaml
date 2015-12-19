@@ -1,0 +1,100 @@
+﻿<Window x:Class="Tonic.MVVM.Views.ExceptionView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tonic.MVVM"
+        xmlns:ui="http://toniccomputing.com/patterns/ui"
+        d:DataContext="{local:Locator Exception}"
+        mc:Ignorable="d"
+        WindowStyle="ToolWindow"
+        ui:Close.Trigger="{Binding Commited}"
+        Title="Excepción no controlada" Height="500" Width="700">
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="AcceptsReturn" Value="True" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <DataTemplate x:Key="ExceptionTemplate">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Type: " FontWeight="Bold" Grid.Row="0" Grid.Column="0" />
+                    <TextBox Text="{Binding Type, Mode=OneWay}"  Grid.Row="0" Grid.Column="1" />
+
+                    <TextBlock Text="Message: " FontWeight="Bold" Grid.Row="1" Grid.Column="0" />
+                    <TextBox Text="{Binding Message, Mode=OneWay}"  Grid.Row="1" Grid.Column="1" />
+
+                </Grid>
+                <Expander Header="StackTrace" FontWeight="Bold"   >
+                    <TextBox Text="{Binding StackTrace, Mode=OneWay}"  FontWeight="Normal" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" />
+                </Expander>
+                <Separator />
+                <ItemsControl ItemsSource="{Binding InnerExceptions}" ItemTemplate="{DynamicResource ExceptionTemplate}" Margin="5,5,0,0">
+
+                </ItemsControl>
+            </StackPanel>
+        </DataTemplate>
+
+    </Window.Resources>
+    <ui:ButtonDock>
+        <ui:ButtonDock.Buttons>
+            <Button Content="Copiar al portapapeles" Command="{Binding CopyCommand}" />
+            <Button Content="Cerrar" Command="{Binding CommitCommand}" />
+        </ui:ButtonDock.Buttons>
+        <Grid Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition  />
+            </Grid.RowDefinitions>
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition  />
+                </Grid.ColumnDefinitions>
+                <Grid>
+                    <TextBlock Text="!" FontFamily="Consolas" FontSize="22" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Grid>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="!" Foreground="#EE4422" FontWeight="Bold" FontFamily="Consolas" FontSize="32" Margin="5,0,5,0" />
+                    <TextBlock Text="Excepción no controlada en " Grid.Column="1" FontSize="16" />
+                    <TextBlock Text="{Binding  Path=AssemblyName}" FontWeight="Bold" FontSize="16"/>
+                    <TextBlock Text=" " FontWeight="Bold" FontSize="16"/>
+                    <TextBlock Text="{Binding  Path=AssemblyVersion}" FontSize="16" Foreground="BlueViolet"/>
+                    <TextBlock Text=" (" FontSize="16" Foreground="Red"/>
+                    <TextBlock Text="{Binding Path=AssemblyDate, StringFormat='dd-MMM-yyyy'}" FontSize="16" Foreground="Red"/>
+                    <TextBlock Text=" )" FontSize="16" Foreground="Red"/>
+                </StackPanel>
+            </Grid>
+            <TabControl Grid.Row="1">
+                <TabItem Header="Tree">
+                    <ScrollViewer>
+                    <ContentPresenter Content="{Binding Item}" ContentTemplate="{StaticResource ExceptionTemplate}">
+                    </ContentPresenter>
+                    </ScrollViewer>
+                </TabItem>
+                <TabItem Header="Text">
+                    <TextBox Text="{Binding Path=Text, Mode=OneWay}" VerticalScrollBarVisibility="Auto">
+
+                    </TextBox>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </ui:ButtonDock>
+</Window>

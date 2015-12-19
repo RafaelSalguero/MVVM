@@ -18,7 +18,7 @@ namespace Tonic.RLinqExtensions
         /// </summary>
         public static object First(this IQueryable Query)
         {
-            return Tonic.RLinq.CallStatic(Query, x => x.First());
+            return Tonic.RLinq.CallStatic(Query, x => Queryable.First(x));
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Tonic.RLinqExtensions
         /// </summary>
         public static object First(this IEnumerable Query)
         {
-            return Tonic.RLinq.CallStatic(Query, x => x.First());
+            return Tonic.RLinq.CallStatic(Query, x => Enumerable.First(x));
         }
 
         /// <summary>

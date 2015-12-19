@@ -24,9 +24,25 @@ namespace Tonic.Excel.Printers
 
         readonly int rows;
 
-        int IPrinter.Print(ExcelWorksheet ws, int startX, int startY)
+        int IPrinter.Height
         {
-            return startY + rows;
+            get
+            {
+                return rows;
+            }
+        }
+
+        int IPrinter.Time
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+        async Task IPrinter.Print(ExcelWorksheet ws, int startX, int startY, Action<double> Progress)
+        {
+            Progress(1);
         }
     }
 }

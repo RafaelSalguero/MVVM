@@ -58,6 +58,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="CollectionCommandsTest.cs" />
+    <Compile Include="ExceptionViewModelTest.cs" />
     <Compile Include="MementoTest.cs" />
     <Compile Include="Retry.cs" />
     <Compile Include="UnitTest1.cs" />

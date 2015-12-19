@@ -18,7 +18,7 @@ namespace Kea.GridData.Test
         {
             [Ignore]
             public string Title { get; set; }
-            public decimal Value { get; set; }
+            public int Value { get; set; }
         }
 
 

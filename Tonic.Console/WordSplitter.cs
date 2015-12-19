@@ -43,7 +43,7 @@ namespace Tonic.Console
                 {
                     case WState.OnCode:
                         {
-                            if (Code[i] == '"')
+                            if (Code[i] == '"' || Code[i] == '\'')
                             {
                                 AddWord();
                                 B.Append("str");
@@ -74,7 +74,7 @@ namespace Tonic.Console
                         }
                     case WState.OnString:
                         {
-                            if (Code[i] == '"')
+                            if (Code[i] == '"' || Code[i] == '\'')
                             {
                                 AddWord();
                                 stateM = WState.OnCode;

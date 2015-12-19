@@ -109,21 +109,46 @@ namespace Tonic.Excel.Printers
         readonly bool firstGreenBar;
 
 
-        int IPrinter.Print(ExcelWorksheet ws, int startX, int startY)
+        int IPrinter.Height
+        {
+            get
+            {
+                return value.GetLength(0);
+            }
+        }
+
+        int IPrinter.Time
+        {
+            get
+            {
+                return value.Length;
+            }
+        }
+
+        async Task IPrinter.Print(ExcelWorksheet ws, int startX, int startY, Action<double> Progress)
         {
             bool gb = firstGreenBar;
+
+            //Establece el estilo de todas las celdas:
+            format.LoadStyle(ws.Cells[startY + 1, startX + 1, startY + value.GetLength(0), startX + value.GetLength(1)].Style, false);
+
             for (int y = startY; y < startY + value.GetLength(0); y++)
             {
-                for (int x = startX; x < startX + value.GetLength(1); x++)
-                {
-                    var cell = ws.Cells[y + 1, x + 1];
+                await Task.Run(() =>
+              {
+                  for (int x = startX; x < startX + value.GetLength(1); x++)
+                  {
+                      var cell = ws.Cells[y + 1, x + 1];
+                      cell.Value = value[y - startY, x - startX];
+                  }
+              });
 
-                    cell.Value = value[y - startY, x - startX];
-                    format.LoadStyle(cell.Style, format.GreenBar && gb);
-                }
+                if (y % 50 == 0)
+                    Progress((y - startY) / (double)value.GetLength(0));
+
                 gb = !gb;
             }
-            return startY + value.GetLength(0);
+            Progress(1);
         }
     }
 }

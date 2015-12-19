@@ -39,6 +39,9 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
@@ -55,11 +58,29 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Tonic.MVVM.Locator, Version=1.0.5815.23727, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Tonic.MVVM.Locator.1.0.5815.23727\lib\net45\Tonic.MVVM.Locator.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Tonic.MVVM.VMBase, Version=1.0.5829.19939, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Tonic.MVVM.VMBase.1.0.5829.19939\lib\net45\Tonic.MVVM.VMBase.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Tonic.UI.Host, Version=1.0.5826.21306, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Tonic.UI.Host.1.0.5826.21306\lib\net45\Tonic.UI.Host.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Tonic.UI.ViewBehaviours, Version=1.0.5826.17285, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Tonic.UI.ViewBehaviours.1.0.5826.17285\lib\net45\Tonic.UI.ViewBehaviours.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assembly.cs" />
+    <Compile Include="Clipboard.cs" />
     <Compile Include="Locator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -75,6 +96,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="ViewLocator.cs" />
+    <Compile Include="Views\ExceptionView.xaml.cs">
+      <DependentUpon>ExceptionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ProgressView.xaml.cs">
       <DependentUpon>ProgressView.xaml</DependentUpon>
     </Compile>
@@ -90,21 +114,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ViewBehaviours\ViewBehaviours.csproj">
-      <Project>{5c086d31-cfbf-4cf9-bb16-2b1abf22979e}</Project>
-      <Name>ViewBehaviours</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ViewLocator\Locator.csproj">
-      <Project>{22165f3c-0734-4fa0-8299-39c8bf23f5af}</Project>
-      <Name>Locator</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VMBase\VMBase.csproj">
-      <Project>{bdb277ef-fb82-4c92-9ff5-32304ffff20d}</Project>
-      <Name>VMBase</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
+    <Page Include="Views\ExceptionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ProgressView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -112,8 +125,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>if Release==$(ConfigurationName) cd $(ProjectDir) &amp;&amp; mkdir Nuget || del Nuget\* /Q &amp;&amp; nuget pack $(ProjectName).csproj -OutputDirectory Nuget -Prop Configuration=Release &amp;&amp; xcopy "Nuget" "\\rafaelito\Kea_nugets\" /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

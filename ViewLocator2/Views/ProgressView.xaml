@@ -17,6 +17,6 @@
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
         <TextBlock Text="{Binding Message}" Grid.Row="0" Margin="0,0,0,5" />
-        <ProgressBar Grid.Row="1" IsIndeterminate="True"  />
+        <ProgressBar Grid.Row="1" IsIndeterminate="{Binding Idle}"  Minimum="0" Maximum="1" Value="{Binding Value}" />
     </Grid>
 </Window>

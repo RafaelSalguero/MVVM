@@ -13,10 +13,8 @@
                             <RowDefinition />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <ContentPresenter Content="{TemplateBinding Content}"
-                                          Margin="{TemplateBinding Padding}"/>
-                        </ScrollViewer>
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                        Margin="{TemplateBinding Padding}"/>
                         <StackPanel Grid.Row="1" Background="#11000000">
                             <Separator Margin="0" Background="#33000000"/>
                             <ItemsControl IsTabStop="False" ItemsSource="{TemplateBinding Buttons}" Margin="10"  HorizontalAlignment="{TemplateBinding ButtonAlignment}" >

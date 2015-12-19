@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -102,6 +103,14 @@ namespace Kea.GridData
             this.FriendlyName = FriendlyName;
         }
 
+        public DataColumn(Func<object, object> PropertyGetter, string FriendlyName, string Format)
+        {
+            this.PropertyGetter = PropertyGetter;
+            this.FriendlyName = FriendlyName;
+            this.Format = Format;
+        }
+
+
         public string FriendlyName { get; private set; }
 
         public Func<object, object> PropertyGetter { get; private set; }
@@ -189,11 +198,22 @@ namespace Kea.GridData
         }
 
         /// <summary>
-        /// Export all public properties as data columns
+        /// Exporta todas las propiedades públicas como columnas
+        /// </summary>
+        /// <param name="Collection"></param>
+        /// <param name="Predicate"></param>
+        /// <returns></returns>
+        public static IEnumerable<DataColumn> FromData(IEnumerable Collection)
+        {
+            return FromData(Collection, P => true);
+        }
+
+        /// <summary>
+        /// Exporta todas las propiedades públicas como columnas
         /// </summary>
         /// <param name="Type"></param>
         /// <returns></returns>
-        public static IEnumerable<DataColumn> FromData(IEnumerable Collection)
+        public static IEnumerable<DataColumn> FromData(IEnumerable Collection, Func<string, bool> Predicate)
         {
             var Type = RLinq.GetEnumerableType(Collection);
             var FirstRow = RLinq.CallStatic(Collection, x => x.FirstOrDefault());
@@ -201,7 +221,7 @@ namespace Kea.GridData
             var Properties = Type.GetProperties().Where(x => x.GetCustomAttribute<IgnoreAttribute>() == null);
 
             var EAc = FastMember.TypeAccessor.Create(Type);
-            foreach (var P in Properties)
+            foreach (var P in Properties.Where (x=> Predicate (x.Name )))
             {
                 ColumnListAttribute ColumnList;
                 if ((ColumnList = P.GetCustomAttribute<ColumnListAttribute>()) != null)
@@ -222,7 +242,7 @@ namespace Kea.GridData
                             foreach (var Subcolumn in FromType(ElementType))
                             {
                                 int localI = i;
-                                yield return new DataColumn(o => Subcolumn.PropertyGetter(Getter((IEnumerable)EAc[o, P.Name], localI)), Title);
+                                yield return new DataColumn(o => Subcolumn.PropertyGetter(Getter((IEnumerable)EAc[o, P.Name], localI)), Title, Subcolumn.Format);
                             }
                             i++;
                         }
@@ -230,7 +250,13 @@ namespace Kea.GridData
                 }
                 else
                 {
-                    yield return new DataColumn(P.Name, GetFriendlyName(P));
+                    var Format = P.GetCustomAttribute<FormatAttribute>()?.Format;
+                    if (Format == null)
+                    {
+                        if (P.PropertyType == typeof(DateTime) || P.PropertyType == typeof(DateTime?))
+                            Format = DateTimeFormatInfo.CurrentInfo.ShortDatePattern;
+                    }
+                    yield return new DataColumn(P.Name, GetFriendlyName(P), Format);
                 }
             }
         }

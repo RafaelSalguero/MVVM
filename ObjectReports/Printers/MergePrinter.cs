@@ -66,7 +66,24 @@ namespace Tonic.Excel.Printers
         readonly CellFormat format;
         readonly object Value;
         readonly int width, height;
-        int IPrinter.Print(ExcelWorksheet ws, int startX, int startY)
+
+        int IPrinter.Time
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+        int IPrinter.Height
+        {
+            get
+            {
+                return height;
+            }
+        }
+
+        async Task IPrinter.Print(ExcelWorksheet ws, int startX, int startY, Action<double> Progress)
         {
 
             var cells = ws.Cells[startY + 1, startX + 1, startY + height, startX + width];
@@ -74,7 +91,7 @@ namespace Tonic.Excel.Printers
             cells.Value = Value;
             format.LoadStyle(cells.Style, format.GreenBar);
 
-            return startY + height;
+            Progress(1);
         }
     }
 }

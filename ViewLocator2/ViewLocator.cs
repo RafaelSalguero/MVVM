@@ -75,6 +75,7 @@ namespace Tonic.MVVM
         public ViewLocator()
         {
             Add(typeof(Views.ProgressView), typeof(Tonic.MVVM.Dialogs.ProgressViewModel));
+            Add(typeof(Views.ExceptionView), typeof(Tonic.MVVM.Dialogs.ExceptionViewModel));
         }
 
         /// <summary>
@@ -103,6 +104,12 @@ namespace Tonic.MVVM
         private FrameworkElement CreateView(object ViewModel)
         {
             var D = dependencies.LastOrDefault(x => x.ViewModelPredicate(ViewModel));
+            if (D == null)
+            {
+                if (ViewModel is FileViewModel)
+                    throw new ArgumentException($"La vista por default de tipo {ViewModel.GetType().Name} solo soporta el método ShowDialog");
+                throw new ArgumentException($"No se encontro ninguna vista que encaje con el view model de tipo {ViewModel.GetType()}");
+            }
             var View = D.ViewConstructor();
             View.DataContext = ViewModel;
             return View;

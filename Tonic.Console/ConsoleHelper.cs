@@ -204,6 +204,7 @@ namespace Tonic.Console
 
             B.AppendLine();
             B.AppendLine("log - returns a delegate Action<string> that raises the console log event");
+            B.AppendLine("version - Show the version of the entry assembly");
             B.AppendLine();
             B.AppendLine("exit - exit the app");
 
@@ -242,14 +243,14 @@ $@"
 
         public Task<string> Execute(string Input)
         {
-            return Execute(Input, null);
+            return Execute(Input, null, true);
         }
         /// <summary>
         /// Execute the given input and returns the console output
         /// </summary>
         /// <param name="Input">The input to execute</param>
         /// <returns>The console output</returns>
-        public async Task<string> Execute(string Input, Action<string> Log)
+        public async Task<string> Execute(string Input, Action<string> Log, bool CatchExceptions)
         {
             if (Log == null) Log = x => { };
 
@@ -268,10 +269,15 @@ $@"
             }
             catch (Exception ex)
             {
-                return
+                if (CatchExceptions)
+                {
+                    return
                     $@"*****************
 Exception:
 {ex.GetAllExceptions().Select(x => x.GetType().Name + " - " + x.Message + x.StackTrace + "-->").Aggregate("", (a, b) => a + "\n\r" + b, x => x)}";
+                }
+                else
+                    throw;
             }
         }
 
@@ -442,6 +448,14 @@ Exception:
 
             switch (Words[0])
             {
+                case "version":
+                    {
+                        var As = Assembly.GetEntryAssembly().GetName();
+                        var Date = (new DateTime(2000, 1, 1)).AddDays(As.Version.Build).AddSeconds(As.Version.Revision * 2);
+                        var Name = As.Name;
+
+                        return $"{Name} {As.Version} ({Date.ToShortDateString()} {Date.ToShortTimeString()})";
+                    }
                 case "await":
                     {
                         var Task = (Task)Stack.Pop();

@@ -17,10 +17,18 @@ namespace Tonic
         /// </summary>
         public ReplaceVisitor(Expression ex, Expression ReplaceWith)
         {
-            this.ex = ex;
-            this.replaceWith = ReplaceWith;
+            this.Predicate = (e) => object.Equals(ex, e);
+            this.Selector = (e) => ReplaceWith;
         }
 
+        public ReplaceVisitor(Func<Expression, bool> Predicate, Func<Expression, Expression> Selector)
+        {
+            this.Predicate = Predicate;
+            this.Selector = Selector;
+        }
+
+        Func<Expression, bool> Predicate;
+        Func<Expression, Expression> Selector;
 
         public static Expression Replace(Expression Expression, Expression Find, Expression ReplaceWith)
         {
@@ -29,15 +37,13 @@ namespace Tonic
         }
 
 
-        private readonly Expression ex;
-        private readonly Expression replaceWith;
         public bool Any = false;
         public override Expression Visit(Expression node)
         {
-            if (ex.Equals(node))
+            if (Predicate(node))
             {
                 Any = true;
-                return replaceWith;
+                return Selector (node );
             }
             else
                 return base.Visit(node);

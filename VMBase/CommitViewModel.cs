@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Tonic.MVVM.Extensions;
 
 namespace Tonic.MVVM
@@ -51,6 +52,11 @@ namespace Tonic.MVVM
                 return !((INotifyDataErrorInfo)this).HasErrors;
             }
         }
+
+        /// <summary>
+        /// Commit command
+        /// </summary>
+        public ICommand CommitCommand => new DelegateCommand(Commit);
 
         /// <summary>
         /// Calls the BeforeCommit method, raise the OnCommit event and change the Committed property to true
