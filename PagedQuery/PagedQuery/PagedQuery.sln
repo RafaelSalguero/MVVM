@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PagedQuery", "PagedQuery\PagedQuery.csproj", "{CA850F6C-D610-43A7-BD75-529C49DFD8B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PagedQueryUnitTest", "PagedQueryUnitTest\PagedQueryUnitTest.csproj", "{4961FA66-9D11-400C-AE71-030EA8A238FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PagedQueryTest", "PagedQueryTest\PagedQueryTest.csproj", "{48602242-FE5E-4111-8817-6C7A6EEBC393}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PagedQueryEF", "PagedQueryEF\PagedQueryEF.csproj", "{E2507048-D3C6-4D15-83D1-B39AE95B1A1C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CA850F6C-D610-43A7-BD75-529C49DFD8B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA850F6C-D610-43A7-BD75-529C49DFD8B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA850F6C-D610-43A7-BD75-529C49DFD8B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA850F6C-D610-43A7-BD75-529C49DFD8B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4961FA66-9D11-400C-AE71-030EA8A238FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4961FA66-9D11-400C-AE71-030EA8A238FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4961FA66-9D11-400C-AE71-030EA8A238FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4961FA66-9D11-400C-AE71-030EA8A238FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48602242-FE5E-4111-8817-6C7A6EEBC393}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48602242-FE5E-4111-8817-6C7A6EEBC393}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48602242-FE5E-4111-8817-6C7A6EEBC393}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48602242-FE5E-4111-8817-6C7A6EEBC393}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2507048-D3C6-4D15-83D1-B39AE95B1A1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2507048-D3C6-4D15-83D1-B39AE95B1A1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2507048-D3C6-4D15-83D1-B39AE95B1A1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2507048-D3C6-4D15-83D1-B39AE95B1A1C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 5
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://bitxemrafa.visualstudio.com/defaultcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = PagedQuery\\PagedQuery.csproj
+		SccProjectName1 = PagedQuery
+		SccLocalPath1 = PagedQuery
+		SccProjectUniqueName2 = PagedQueryEF\\PagedQueryEF.csproj
+		SccProjectName2 = PagedQueryEF
+		SccLocalPath2 = PagedQueryEF
+		SccProjectUniqueName3 = PagedQueryTest\\PagedQueryTest.csproj
+		SccProjectName3 = PagedQueryTest
+		SccLocalPath3 = PagedQueryTest
+		SccProjectUniqueName4 = PagedQueryUnitTest\\PagedQueryUnitTest.csproj
+		SccProjectName4 = PagedQueryUnitTest
+		SccLocalPath4 = PagedQueryUnitTest
+	EndGlobalSection
+EndGlobal
