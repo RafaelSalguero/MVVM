@@ -49,6 +49,19 @@ namespace ViewBehavioursTest
            });
         }
 
+        bool close;
+        public bool Close
+        {
+            get
+            {
+                return close;
+            }
+            set
+            {
+                close = value;
+            }
+       }
+
         public TestEnum Item { get; set; }
         public object Item2 { get; set; }
         public bool HolaEnabled { get; set; }

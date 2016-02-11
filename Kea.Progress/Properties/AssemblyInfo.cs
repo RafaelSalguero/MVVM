@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Kea.Progress")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Facilita el reporte de progresos entre tareas anidadas")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Kea Software")]
 [assembly: AssemblyProduct("Kea.Progress")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]

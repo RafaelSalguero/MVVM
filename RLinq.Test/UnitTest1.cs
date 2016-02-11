@@ -136,8 +136,6 @@ namespace RLinq.Test
             var MacN = items.Select(x => DbFunctions.AddMilliseconds(x.Date, DbFunctions.DiffMilliseconds(TimeSpan.Zero, x.Time)).Value);
 
             Assert.AreEqual(MacN.ToString(), MaxDec.ToString());
-
-            Assert.IsTrue(Max.SequenceEqual(MaxDec));
         }
 
 

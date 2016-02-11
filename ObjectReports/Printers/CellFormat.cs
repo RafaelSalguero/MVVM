@@ -33,6 +33,11 @@ namespace Tonic.Excel.Printers
         /// </summary>
         public bool GreenBar { get; set; }
 
+        /// <summary>
+        /// Formato de la celda
+        /// </summary>
+        public string NumberFormat { get; set; }
+
         internal static System.Drawing.Color FromColor(Color C)
         {
             return System.Drawing.Color.FromArgb(C.A, C.R, C.G, C.B);
@@ -69,6 +74,9 @@ namespace Tonic.Excel.Printers
 
             if (force || Format.Foreground != Colors.Black)
                 Style.Font.Color.SetColor(FromColor(Format.Foreground));
+
+            if (!string.IsNullOrEmpty(NumberFormat))
+                Style.Numberformat.Format = NumberFormat;
         }
     }
 }

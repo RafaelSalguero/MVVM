@@ -20,9 +20,9 @@ namespace ObjectReports.Test
         {
             DateTime D = new DateTime(2015, 11, 23);
             var P = new MergePrinter(D);
-            var bytes = await Export.SingleSheetExport("test", P);
+            var bytes = await Export.SingleSheetExport("test", P, x=> { });
 
-          //  System.IO.File.WriteAllBytes(@"c:\prueba\prueba.xlsx", bytes);
+            //  System.IO.File.WriteAllBytes(@"c:\prueba\prueba.xlsx", bytes);
         }
     }
 }

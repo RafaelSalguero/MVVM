@@ -76,6 +76,7 @@ namespace Tonic.MVVM
         {
             Add(typeof(Views.ProgressView), typeof(Tonic.MVVM.Dialogs.ProgressViewModel));
             Add(typeof(Views.ExceptionView), typeof(Tonic.MVVM.Dialogs.ExceptionViewModel));
+            Add(typeof(Views.MessageView), typeof(Tonic.MVVM.Dialogs.MessageViewModel));
         }
 
         /// <summary>
@@ -155,10 +156,6 @@ namespace Tonic.MVVM
             }
         }
 
-        private void ShowMessageDialog(MessageViewModel Vm)
-        {
-            MessageBox.Show(Vm.Message, Vm.Title);
-        }
 
         /// <summary>
         /// Shows the view which have a dependency on this view model
@@ -169,14 +166,6 @@ namespace Tonic.MVVM
             if (ViewModel is FileViewModel)
             {
                 ShowFileDialog((FileViewModel)ViewModel);
-            }
-            else if (ViewModel is MessageViewModel)
-            {
-                ShowMessageDialog((MessageViewModel)ViewModel);
-            }
-            else if (ViewModel is string)
-            {
-                ShowDialog(new MessageViewModel { Message = (string)ViewModel });
             }
             else
             {

@@ -58,6 +58,26 @@ namespace Tonic.Excel.Printers
         /// </summary>
         /// <param name="Value">El valor a imprimir</param>
         /// <param name="Width">El numero de celdas horizontales combinadas</param>
+        /// <param name="Height">El número de celdas verticales combinadas</param>
+        /// <param name="xOffset">Desplazamiento horizontal</param>
+        /// <param name="yOffset">Desplazamiento vertical</param>
+        /// <param name="Format">Formato de la celda</param>
+        public MergePrinter(object Value, int Width, int Height, int xOffset, int yOffset, CellFormat Format)
+        {
+            this.Value = Value;
+            this.width = Width;
+            this.height = Height;
+            this.xOffset = xOffset;
+            this.yOffset = yOffset;
+
+            this.format = Format;
+        }
+
+        /// <summary>
+        /// Imprime un solo valor en una celda combinada
+        /// </summary>
+        /// <param name="Value">El valor a imprimir</param>
+        /// <param name="Width">El numero de celdas horizontales combinadas</param>
         /// <param name="Format">Formato de la celda</param>
         public MergePrinter(object Value, int Width, CellFormat Format) : this(Value, Width, 1, Format)
         {
@@ -66,6 +86,7 @@ namespace Tonic.Excel.Printers
         readonly CellFormat format;
         readonly object Value;
         readonly int width, height;
+        readonly int xOffset, yOffset;
 
         int IPrinter.Time
         {
@@ -79,12 +100,14 @@ namespace Tonic.Excel.Printers
         {
             get
             {
-                return height;
+                return height + yOffset;
             }
         }
 
         async Task IPrinter.Print(ExcelWorksheet ws, int startX, int startY, Action<double> Progress)
         {
+            startX += xOffset;
+            startY += yOffset;
 
             var cells = ws.Cells[startY + 1, startX + 1, startY + height, startX + width];
             cells.Merge = true;

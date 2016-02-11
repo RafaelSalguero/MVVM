@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ViewBehavioursTest"
         xmlns:ui="http://toniccomputing.com/patterns/ui"
         mc:Ignorable="d"
-        ui:Close.Trigger="{Binding Committed}"
+        ui:Close.Trigger="{Binding Close}"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
         <Grid.Resources>

@@ -221,7 +221,7 @@ namespace Kea.GridData
             var Properties = Type.GetProperties().Where(x => x.GetCustomAttribute<IgnoreAttribute>() == null);
 
             var EAc = FastMember.TypeAccessor.Create(Type);
-            foreach (var P in Properties.Where (x=> Predicate (x.Name )))
+            foreach (var P in Properties.Where(x => Predicate(x.Name)))
             {
                 ColumnListAttribute ColumnList;
                 if ((ColumnList = P.GetCustomAttribute<ColumnListAttribute>()) != null)
@@ -280,6 +280,29 @@ namespace Kea.GridData
                 var cell = c.PropertyGetter(o);
                 yield return cell;
             }
+        }
+
+        public static string ToString(object Value, string Format)
+        {
+            if (Value == null)
+                return "";
+            if (string.IsNullOrEmpty(Format))
+                return Value.ToString();
+            else
+                return ((dynamic)Value).ToString(Format);
+        }
+
+        public static string[,] ToString(object[,] value, IReadOnlyList<string> formats)
+        {
+            var result = new string[value.GetLength(0), value.GetLength(1)];
+            for (int y = 0; y < value.GetLength(0); y++)
+            {
+                for (int x = 0; x < value.GetLength(1); x++)
+                {
+                    result[y, x] = ToString(value[y, x], formats[x]);
+                }
+            }
+            return result;
         }
 
         /// <summary>

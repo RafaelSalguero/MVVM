@@ -13,6 +13,8 @@ namespace Tonic.MVVM
         {
             var Kernel = new Ninject.StandardKernel();
             Kernel.Bind<Tonic.MVVM.Dialogs.ProgressViewModel>().ToMethod(x => new Dialogs.ProgressViewModel { Title = "Titulo de prueba", Message = "Mensaje de prueba", Value = 0.5 });
+            Kernel.Bind<Tonic.MVVM.Dialogs.MessageViewModel>().ToMethod(x => new Dialogs.MessageViewModel { Title = "Titulo de prueba", Message = "Mensaje de prueba" });
+
             Kernel.Bind<Tonic.MVVM.Dialogs.ExceptionViewModel>().ToMethod(x =>
           {
               try
@@ -32,6 +34,8 @@ namespace Tonic.MVVM
               throw new ApplicationException();
           });
 
+
+
             return Kernel;
         }
 
@@ -40,6 +44,7 @@ namespace Tonic.MVVM
             var P = new PairLocator(Designer());
             P.Add(typeof(Tonic.MVVM.Dialogs.ProgressViewModel));
             P.Add(typeof(Tonic.MVVM.Dialogs.ExceptionViewModel));
+            P.Add(typeof(Tonic.MVVM.Dialogs.MessageViewModel));
             return P;
         }
 

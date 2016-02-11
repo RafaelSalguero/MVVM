@@ -24,7 +24,6 @@ namespace Tonic.Excel.Printers
         {
             this.Objects = Objects.ToList();
             this.Columns = Columns.ToList();
-            height = this.Objects.Count + 1;
             this.time = this.Objects.Count * this.Columns.Count;
             this.value = Data.ToGrid(Objects, Columns);
         }
@@ -65,7 +64,7 @@ namespace Tonic.Excel.Printers
         public static TablePrinter Create<T>(IEnumerable<T> Data, bool FreezeHeader, Func<T, CellFormat> ConditionalFormat, IEnumerable<string> ExcludeColumns)
         {
             var Columns =
-                DataColumn.FromData(Data, Prop => !ExcludeColumns.Contains (Prop ));
+                DataColumn.FromData(Data, Prop => !ExcludeColumns.Contains(Prop));
 
 
             var ret = new TablePrinter(Data.Cast<object>(), Columns);
@@ -86,13 +85,7 @@ namespace Tonic.Excel.Printers
         }
 
         int height;
-        int IPrinter.Height
-        {
-            get
-            {
-                return height;
-            }
-        }
+        int IPrinter.Height => this.Objects.Count + (PrintHeader ? 1 : 0);
         int time;
         int IPrinter.Time => time;
 
@@ -178,7 +171,7 @@ namespace Tonic.Excel.Printers
                     cond.Formula = "TRUE";
                 }
 
-                if (y % 50 == 0)
+                if (y % 200 == 0)
                     ReportProgress((y - startY) / (double)value.GetLength(0));
             }
 
@@ -211,7 +204,7 @@ namespace Tonic.Excel.Printers
                 StartY++;
             }
 
-            await PrintContent(ws, StartX, StartY, x => ReportProgress(x * 2.0 / 3.0));
+            await PrintContent(ws, StartX, StartY, x => ReportProgress(x * 1 / 2.0));
 
             //Fit columns:
             if (AutoFit)
@@ -221,7 +214,9 @@ namespace Tonic.Excel.Printers
                     await Task.Run(() => ws.Column(x + 1).AutoFit());
 
                     var prog = (x - StartX) / (double)(Columns.Count);
-                    ReportProgress((prog + 2.0) / 3.0);
+
+                    if (x % 5 == 0)
+                        ReportProgress((prog + 1.0) / 2.0);
                 }
             }
 

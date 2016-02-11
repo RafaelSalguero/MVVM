@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Tonic.Console")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Provee un lenguaje de pila que permite manipular ensamblados de .net")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Tonic Computing, Kea Software")]
 [assembly: AssemblyProduct("Tonic.Console")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]

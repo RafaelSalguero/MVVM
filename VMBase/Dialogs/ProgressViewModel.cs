@@ -12,8 +12,6 @@ namespace Tonic.MVVM.Dialogs
     /// </summary>
     public class ProgressViewModel : CommandsViewModel, IProgress<double>
     {
-
-
         /// <summary>
         /// Window title
         /// </summary>

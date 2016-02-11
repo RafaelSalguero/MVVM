@@ -12,26 +12,47 @@ namespace Tonic.MVVM
     /// </summary>
     public class DelegateCommand : ICommand
     {
+        private DelegateCommand()
+        {
+            //En ambiente de pruebas unitarias, no se podra obtener el hilo de la interfaz:
+            try
+            {
+                UiThread = TaskScheduler.FromCurrentSynchronizationContext();
+            }
+            catch (Exception ex)
+            {
+            }
+        }
 
         /// <summary>
         /// Crea un nuevo DelegateCommand
         /// </summary>
         /// <param name="Action">La acción que se realizará al ejecutar el comando</param>
         /// <param name="CanExecute">Determina si el comando se puede ejecutar</param>
-        public DelegateCommand(Action<object> Action, Func<object, bool> CanExecute)
+        public DelegateCommand(Func<Task> Action, Func<object, bool> CanExecute) : this()
+        {
+            this.actionAsync = Action;
+            this.canExecute = CanExecute;
+        }
+
+        /// <summary>
+        /// Crea un nuevo DelegateCommand
+        /// </summary>
+        /// <param name="Action">Accion asíncrona a ejecutar</param>
+        public DelegateCommand(Func<Task> Action) : this(Action, o => true)
+        {
+
+        }
+
+        /// <summary>
+        /// Crea un nuevo DelegateCommand
+        /// </summary>
+        /// <param name="Action">La acción que se realizará al ejecutar el comando</param>
+        /// <param name="CanExecute">Determina si el comando se puede ejecutar</param>
+        public DelegateCommand(Action<object> Action, Func<object, bool> CanExecute) : this()
         {
             this.action = Action;
             this.canExecute = CanExecute;
-
-            //En ambiente de pruebas unitarias, no se podra obtener el hilo de la interfaz:
-            try
-            {
-                UiThread = TaskScheduler.FromCurrentSynchronizationContext();
-            }
-            catch (Exception)
-            {
-
-            }
         }
 
         /// <summary>
@@ -49,11 +70,6 @@ namespace Tonic.MVVM
         /// <param name="Action">La acción que se realizará al ejecutar el comando</param>
         public DelegateCommand(Action Action) : this(o => Action(), o => true) { }
 
-        /// <summary>
-        /// Crea un nuevo DelegateCommand
-        /// </summary>
-        /// <param name="Action">La acción que se realizará al ejecutar el comando</param>
-        public DelegateCommand(Func<Task> Action) : this(o => Action(), o => true) { }
 
         /// <summary>
         /// Crea un nuevo DelegateCommand
@@ -62,6 +78,7 @@ namespace Tonic.MVVM
         public DelegateCommand(Action<object> Action) : this(Action, o => true) { }
 
         private readonly Action<object> action;
+        private readonly Func<Task> actionAsync;
 
         /// <summary>
         /// Se dispara al llamar al metodo RaiseCanExecuteChanged
@@ -96,14 +113,34 @@ namespace Tonic.MVVM
             return canExecute(parameter);
         }
 
+        bool IsAsync => actionAsync != null;
+
         /// <summary>
         /// Ejecuta el comando siempre y cuando canExecute sea true
         /// </summary>
         /// <param name="parameter"></param>
-        public void Execute(object parameter)
+        public async void Execute(object parameter)
         {
             if (canExecute(parameter))
-                action(parameter);
+            {
+                if (IsAsync)
+                {
+                    if (UiThread == null)
+                    {
+                        actionAsync().ContinueWith(x =>
+                     {
+                         Console.WriteLine("DelegateCommand async execute failed with no UiThread");
+                     }, TaskContinuationOptions.OnlyOnFaulted);
+                    }
+                    else
+                    {
+                        await actionAsync();
+                    }
+                }
+
+                else
+                    action(parameter);
+            }
         }
     }
 

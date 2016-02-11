@@ -8,11 +8,11 @@ using System.Windows.Markup;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ViewBehaviours")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Tonic.UI.ViewBehaviours")]
+[assembly: AssemblyDescription("XAML Extensions supporting the MMVM architecture")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ViewBehaviours")]
+[assembly: AssemblyCompany("Tonic Computing, Kea Software")]
+[assembly: AssemblyProduct("Tonic.UI.ViewBehaviours")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

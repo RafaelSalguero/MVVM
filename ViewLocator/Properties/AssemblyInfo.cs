@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ViewLocator")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Tonic.MVVM.ViewLocator")]
+[assembly: AssemblyDescription("Provides a dependency locator")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ViewLocator")]
+[assembly: AssemblyCompany("Tonic Computing, Kea Software")]
+[assembly: AssemblyProduct("Tonic.MVVM.ViewLocator")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

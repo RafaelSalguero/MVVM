@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("VMBase")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Tonic.MVVM.VMBase")]
+[assembly: AssemblyDescription("Tonic MVVM framework")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("VMBase")]
+[assembly: AssemblyCompany("Tonic Computing, Kea Software")]
+[assembly: AssemblyProduct("Tonic.MVVM.VMBase")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

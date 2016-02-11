@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Kea.Progress.TEst
@@ -24,12 +26,30 @@ namespace Kea.Progress.TEst
             }
         }
 
+        [TestMethod]
+        public void AsyncPressureTest()
+        {
+            var Pro = new TestProgress();
+            var P = Pro.Child(1000);
+
+            var T = new List<Task>();
+            for (int i = 0; i < 1000; i++)
+            {
+                T.Add(Task.Run(async () =>
+                {
+                    await Task.Delay(1);
+                    P.Step();
+                }));
+            }
+
+            Task.WhenAll(T).Wait();
+        }
 
         [TestMethod]
         public void AsyncProgressTest()
         {
             var Prog = new TestProgress();
-            var P = Prog.Child(  2);
+            var P = Prog.Child(2);
 
             //Agrega dos tareas que su progreso sera intercalado:
             var T1 = P.Child(2);

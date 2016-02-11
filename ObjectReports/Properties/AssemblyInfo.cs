@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ObjectReports")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Tonic.Excel")]
+[assembly: AssemblyDescription("Excel reporte library")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ObjectReports")]
+[assembly: AssemblyCompany("Tonic Computing")]
+[assembly: AssemblyProduct("Tonic.Excel")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

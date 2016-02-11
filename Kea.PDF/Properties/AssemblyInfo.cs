@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Kea.GridAnnotations")]
-[assembly: AssemblyDescription("Convierte objetos a tablas para reportes")]
+[assembly: AssemblyTitle("Kea.PDF")]
+[assembly: AssemblyDescription("Provee una capa de abstraccion sobre MigraDoc con la api de Kea.GridData")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Kea Software")]
-[assembly: AssemblyProduct("Kea.GridAnnotations")]
+[assembly: AssemblyProduct("Kea.PDF")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("c7c00f4f-fa0f-4139-b5af-110b1971427f")]
+[assembly: Guid("5315c946-a139-49c8-8f05-ed61ed7841b6")]
 
 // Version information for an assembly consists of the following four values:
 //

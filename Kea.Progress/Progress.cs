@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kea
@@ -105,16 +107,17 @@ namespace Kea
             }
         }
 
+        double stepAcum;
         public double LastValue
         {
             get
             {
-                return Childs.Sum(x => x.LastValue / x.Steps);
+                return Childs.Sum(x => x.LastValue / x.Steps) + stepAcum;
             }
         }
 
 
-        List<IStepProgress> Childs = new List<IStepProgress>();
+        ConcurrentBag<IStepProgress> Childs = new ConcurrentBag<IStepProgress>();
 
 
         public void AddChild(IStepProgress Child)
@@ -131,15 +134,14 @@ namespace Kea
 
         public void Reset()
         {
-            Childs.Clear();
+            stepAcum = 0;
+            var newBag = new ConcurrentBag<IStepProgress>();
+            Interlocked.Exchange(ref Childs, newBag);
         }
 
         public void Step(double Steps)
         {
-            var Dummy = new StepProgress(1);
-            Dummy.Step(Steps);
-
-            Childs.Add(Dummy);
+            stepAcum += Steps;
             OnReport?.Invoke(this, new ProgressEventArgs(LastValue));
         }
         public void Report(double Value)

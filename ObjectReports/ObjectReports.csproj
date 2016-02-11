@@ -34,7 +34,7 @@
     <DocumentationFile>bin\Release\Tonic.Excel.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <RunPostBuildEvent>Always</RunPostBuildEvent>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EPPlus, Version=4.0.4.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
@@ -44,13 +44,6 @@
     <Reference Include="FastMember, Version=1.0.0.9, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FastMember.1.0.0.11\lib\net40\FastMember.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="Kea.GridData, Version=1.0.5819.17193, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Kea.GridData.1.0.5819.17193\lib\net45\Kea.GridData.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Kea.Progress, Version=1.0.5816.22822, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\Kea.Progress\bin\Release\Kea.Progress.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
@@ -82,6 +75,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="FodyWeavers.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Kea.GridAnnotations\Kea.GridData.csproj">
+      <Project>{c7c00f4f-fa0f-4139-b5af-110b1971427f}</Project>
+      <Name>Kea.GridData</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kea.Progress\Kea.Progress.csproj">
+      <Project>{29fa6a93-bcee-4fd0-b384-a59a347275d1}</Project>
+      <Name>Kea.Progress</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.1.29.3\build\portable-net+sl+win+wpa+wp\Fody.targets" Condition="Exists('..\packages\Fody.1.29.3\build\portable-net+sl+win+wpa+wp\Fody.targets')" />
@@ -128,7 +131,7 @@ foreach (var item in filesToCleanup)
     <CosturaCleanup Config="FodyWeavers.xml" Files="@(ReferenceCopyLocalPaths->'$(OutDir)%(DestinationSubDirectory)%(Filename)%(Extension)')" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>if Release==$(ConfigurationName) cd $(ProjectDir) &amp;&amp; mkdir Nuget || del Nuget\* /Q &amp;&amp; nuget pack $(ProjectName).csproj -OutputDirectory Nuget -Prop Configuration=Release &amp;&amp; xcopy "Nuget" "\\rafaelito\Kea_nugets\" /Y</PostBuildEvent>
+    <PostBuildEvent>if Release==$(ConfigurationName) cd $(ProjectDir) &amp;&amp; mkdir Nuget || del Nuget\* /Q &amp;&amp; nuget pack $(ProjectName).csproj -OutputDirectory Nuget -Prop Configuration=Release -IncludeReferencedProjects &amp;&amp; xcopy "Nuget" "\\rafaelito\Kea_nugets\" /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

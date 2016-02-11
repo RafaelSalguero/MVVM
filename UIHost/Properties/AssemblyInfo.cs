@@ -8,11 +8,11 @@ using System.Windows.Markup;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("UIHost")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Tonic.UI.Host")]
+[assembly: AssemblyDescription("Container WPF controls")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("UIHost")]
+[assembly: AssemblyCompany("Tonic Computing, Kea Software")]
+[assembly: AssemblyProduct("Tonic.UI.Host")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

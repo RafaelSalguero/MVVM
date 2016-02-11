@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Castle.DynamicProxy;
@@ -105,7 +106,7 @@ namespace Tonic.MVVM
         {
             var cP = new HashSet<string>();
             CopyProperties = cP;
-            var ret = (T)generator.CreateClassProxy(typeof(T), new ProxyInterceptor(Instance, cP));
+            var ret = (T)generator.CreateClassProxy(typeof(T), new Type[] { typeof(ISerializable) }, new ProxyInterceptor(Instance, cP));
 
             //Copy all non virtual properties:
             foreach (var P in typeof(T).GetProperties().Where(x => x.CanRead && x.CanWrite && !x.GetGetMethod().IsVirtual))
