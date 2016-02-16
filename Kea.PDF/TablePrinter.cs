@@ -59,6 +59,7 @@ namespace Kea.PDF
         /// <summary>
         /// Crea un nuevo TablePrinter a partir de una colección de objetos, tomando la definición de las columnas automaticamente a partir de las propiedades del tipo T
         /// </summary>
+        /// <param name="Data">Colección de objetos de la que para cada objeto seran las filas y para cada propiedad publica las columnas</param>
         /// <param name="ExcludeColumns">Nombres de las propiedades de las columnas que se excluiran del reporte</param>
         public static TablePrinter Create<T>(IEnumerable<T> Data, IEnumerable<string> ExcludeColumns)
         {
@@ -68,6 +69,15 @@ namespace Kea.PDF
             return ret;
         }
 
+        /// <summary>
+        /// Crea un nuevo TablePrinter a partir de una colección de objetos, tomando la definición de las columnas automaticamente a partir de las propiedades del tipo T
+        /// </summary>
+        /// <param name="Data">Colección de objetos de la que para cada objeto seran las filas y para cada propiedad publica las columnas</param>
+        public static TablePrinter Create<T>(IEnumerable<T> Data)
+        {
+            return Create(Data, new string[0]);
+        }
+
         public Table Create()
         {
             var table = new Table();
@@ -75,8 +85,14 @@ namespace Kea.PDF
 
             //Obtiene los anchos de la tabla:
             var widths = GetTableWidths(columns.Select(x => x.FriendlyName).ToArray(), value, new Font("Arial", Unit.FromPoint(11)));
-            foreach (var c in widths)
-                table.AddColumn(Unit.FromCentimeter(c));
+            for (var i = 0; i < columns.Count; i++)
+            {
+                if (columns[i].Width == null)
+                    table.AddColumn(Unit.FromCentimeter(widths[i]));
+                else
+                    table.AddColumn(Unit.FromInch(columns[i].Width.Value / 96.0));
+            }
+            
 
             //cabecera:
             {

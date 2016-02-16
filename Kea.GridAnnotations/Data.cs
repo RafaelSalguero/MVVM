@@ -12,6 +12,32 @@ using Tonic;
 namespace Kea.GridData
 {
     /// <summary>
+    /// Specify the column width in 1/96 inches. If this attribute is not specified, the column is fitted to content
+    /// </summary>
+    [System.AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
+    public sealed class ColumnWidthAttribute : Attribute
+    {
+        readonly double width;
+
+        /// <summary>
+        /// Specify the column width in pixels
+        /// </summary>
+        /// <param name="width">Width in pixels</param>
+        public ColumnWidthAttribute(double width)
+        {
+            this.width = width;
+        }
+
+        /// <summary>
+        /// Column width in pixels
+        /// </summary>
+        public double Width
+        {
+            get { return width; }
+        }
+    }
+
+    /// <summary>
     /// Especifica un formato de columna para la definicion autogenerada de las columnas
     /// </summary>
     [System.AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
@@ -95,6 +121,11 @@ namespace Kea.GridData
         {
             this.Format = Format;
         }
+        public DataColumn(string Property, string FriendlyName, string Format, double? ColumnWidth) : this(Property, FriendlyName)
+        {
+            this.Format = Format;
+            this.Width = ColumnWidth;
+        }
 
 
         public DataColumn(Func<object, object> PropertyGetter, string FriendlyName)
@@ -103,71 +134,38 @@ namespace Kea.GridData
             this.FriendlyName = FriendlyName;
         }
 
-        public DataColumn(Func<object, object> PropertyGetter, string FriendlyName, string Format)
+        public DataColumn(Func<object, object> PropertyGetter, string FriendlyName, string Format) : this(PropertyGetter, FriendlyName, Format, null)
+        {
+
+        }
+
+        public DataColumn(Func<object, object> PropertyGetter, string FriendlyName, string Format, double? ColumnWidth)
         {
             this.PropertyGetter = PropertyGetter;
             this.FriendlyName = FriendlyName;
             this.Format = Format;
+            this.Width = ColumnWidth;
         }
 
 
+        /// <summary>
+        /// Column friendly name that will appear to the user
+        /// </summary>
         public string FriendlyName { get; private set; }
-
+        /// <summary>
+        /// Function that gets the value of a cell for a given object for this column
+        /// </summary>
         public Func<object, object> PropertyGetter { get; private set; }
+        /// <summary>
+        /// String formatting. Only valid for cell values that implement the .ToString(string Format) method
+        /// </summary>
         public string Format { get; private set; }
 
         /// <summary>
-        /// Add whitespaces to capitalization changes
+        /// Column width in 1/96 inch. Null if the column should be fitted to content
         /// </summary>
-        /// <returns></returns>
-        static string FixName(string Name)
-        {
-            if (string.IsNullOrEmpty(Name)) return "";
+        public double? Width { get; private set; }
 
-            if (Name.Length >= 2 && Name.StartsWith("_") && char.IsDigit(Name[1]))
-            {
-                Name = Name.Substring(1);
-            }
-
-            StringBuilder B = new StringBuilder();
-            B.Append(Name[0]);
-
-            for (int i = 1; i < Name.Length; i++)
-            {
-                var last = Name[i - 1];
-                var current = Name[i];
-
-                if (char.IsUpper(current) && !char.IsUpper(last) || char.IsDigit(current) && !char.IsDigit(last))
-                    B.Append(' ');
-                B.Append(char.ToLower(current));
-            }
-            return B.ToString();
-        }
-
-        static string GetFriendlyName(PropertyInfo P)
-        {
-            var desc = P.GetCustomAttribute<DescriptionAttribute>();
-            if (desc != null) return desc.Description;
-            else
-            {
-                return FixName(P.Name);
-            }
-        }
-
-        static string DefaultConverter(object Value, PropertyInfo P)
-        {
-            if (object.Equals(null, Value))
-                return "";
-            var type = Value.GetType();
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
-                return ((dynamic)Value).Value;
-
-            var Format = P.GetCustomAttribute<FormatAttribute>();
-            if (Format != null)
-                return ((dynamic)Value).ToString(Format.Format);
-            else
-                return Value.ToString();
-        }
 
         public static Func<IEnumerable, int, object> GetIndexer(Type Type)
         {
@@ -256,9 +254,64 @@ namespace Kea.GridData
                         if (P.PropertyType == typeof(DateTime) || P.PropertyType == typeof(DateTime?))
                             Format = DateTimeFormatInfo.CurrentInfo.ShortDatePattern;
                     }
-                    yield return new DataColumn(P.Name, GetFriendlyName(P), Format);
+                    var Width = P.GetCustomAttribute<ColumnWidthAttribute>()?.Width;
+
+                    yield return new DataColumn(P.Name, GetFriendlyName(P), Format, Width);
                 }
             }
+        }
+
+        /// <summary>
+        /// Add whitespaces to capitalization changes
+        /// </summary>
+        /// <returns></returns>
+        static string FixName(string Name)
+        {
+            if (string.IsNullOrEmpty(Name)) return "";
+
+            if (Name.Length >= 2 && Name.StartsWith("_") && char.IsDigit(Name[1]))
+            {
+                Name = Name.Substring(1);
+            }
+
+            StringBuilder B = new StringBuilder();
+            B.Append(Name[0]);
+
+            for (int i = 1; i < Name.Length; i++)
+            {
+                var last = Name[i - 1];
+                var current = Name[i];
+
+                if (char.IsUpper(current) && !char.IsUpper(last) || char.IsDigit(current) && !char.IsDigit(last))
+                    B.Append(' ');
+                B.Append(char.ToLower(current));
+            }
+            return B.ToString();
+        }
+
+        static string GetFriendlyName(PropertyInfo P)
+        {
+            var desc = P.GetCustomAttribute<DescriptionAttribute>();
+            if (desc != null) return desc.Description;
+            else
+            {
+                return FixName(P.Name);
+            }
+        }
+
+        static string DefaultConverter(object Value, PropertyInfo P)
+        {
+            if (object.Equals(null, Value))
+                return "";
+            var type = Value.GetType();
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                return ((dynamic)Value).Value;
+
+            var Format = P.GetCustomAttribute<FormatAttribute>();
+            if (Format != null)
+                return ((dynamic)Value).ToString(Format.Format);
+            else
+                return Value.ToString();
         }
     }
 

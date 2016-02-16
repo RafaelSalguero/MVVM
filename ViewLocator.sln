@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locator", "ViewLocator\Locator.csproj", "{22165F3C-0734-4FA0-8299-39C8BF23F5AF}"
 EndProject
@@ -80,6 +80,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kea.DbCheck", "Kea.DbCheck\Kea.DbCheck.csproj", "{91AAC603-2442-4095-AFD4-D93E8CC704AC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kea.PDF", "Kea.PDF\Kea.PDF.csproj", "{5315C946-A139-49C8-8F05-ED61ED7841B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kea.Pdf.Test", "Kea.Pdf.Test\Kea.Pdf.Test.csproj", "{DEFAB694-8358-4C15-B0B1-46FC84DB03C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -223,6 +225,10 @@ Global
 		{5315C946-A139-49C8-8F05-ED61ED7841B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5315C946-A139-49C8-8F05-ED61ED7841B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5315C946-A139-49C8-8F05-ED61ED7841B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEFAB694-8358-4C15-B0B1-46FC84DB03C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEFAB694-8358-4C15-B0B1-46FC84DB03C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEFAB694-8358-4C15-B0B1-46FC84DB03C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEFAB694-8358-4C15-B0B1-46FC84DB03C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -260,5 +266,6 @@ Global
 		{D554AA47-CF3E-48FE-8A17-8B3CEDCD0DFF} = {5C2E17DA-9A37-4BD8-A08D-9836248633F4}
 		{91AAC603-2442-4095-AFD4-D93E8CC704AC} = {5C2E17DA-9A37-4BD8-A08D-9836248633F4}
 		{5315C946-A139-49C8-8F05-ED61ED7841B6} = {6090132D-DF76-4633-942F-EB12297FD412}
+		{DEFAB694-8358-4C15-B0B1-46FC84DB03C7} = {6090132D-DF76-4633-942F-EB12297FD412}
 	EndGlobalSection
 EndGlobal
