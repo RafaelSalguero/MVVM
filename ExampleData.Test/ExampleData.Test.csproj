@@ -82,10 +82,6 @@
       <Project>{5eb55ee9-ce35-4227-935d-e87fb1758fdf}</Project>
       <Name>EFExtensions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EntityViewModel\EntityViewModel.csproj">
-      <Project>{ae0e7905-8f82-44ba-80da-b5654753cea1}</Project>
-      <Name>EntityViewModel</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ExampleData\ExampleData.csproj">
       <Project>{230518f0-197a-4590-8af5-627881ac0b8b}</Project>
       <Name>ExampleData</Name>

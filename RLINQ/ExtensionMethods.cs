@@ -22,7 +22,7 @@ namespace Tonic
         internal static bool ThrowExecuteExpression;
         internal class ExpressionException : Exception
         {
-            public ExpressionException(LambdaExpression Value)
+            public ExpressionException(LambdaExpression Value) : base("This exception is part of the inner working of Tonic.RLinq Decompile and should be ignored")
             {
                 this.Value = Value;
             }

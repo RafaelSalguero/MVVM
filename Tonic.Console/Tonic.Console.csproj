@@ -35,7 +35,7 @@
     <DocumentationFile>bin\Release\Tonic.Console.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -74,7 +74,7 @@
     </PropertyGroup>
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>if Release==$(ConfigurationName) cd $(ProjectDir) &amp;&amp; del Nuget\* /Q &amp;&amp; nuget pack $(ProjectName).csproj -OutputDirectory Nuget -Prop Configuration=Release -IncludeReferencedProjects &amp;&amp; xcopy "Nuget" "\\rafaelito\Kea_nugets\" /Y</PostBuildEvent>
+    <PostBuildEvent>if Release==$(ConfigurationName) cd $(ProjectDir) &amp;&amp; mkdir Nuget ||  del Nuget\* /Q &amp;&amp; nuget pack $(ProjectName).csproj -OutputDirectory Nuget -Prop Configuration=Release -IncludeReferencedProjects</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

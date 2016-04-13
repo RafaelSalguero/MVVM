@@ -153,7 +153,7 @@ foreach (var item in filesToCleanup)
   </Target>
   <Import Project="..\packages\PropertyChanged.Fody.1.50.3\build\dotnet\PropertyChanged.Fody.targets" Condition="Exists('..\packages\PropertyChanged.Fody.1.50.3\build\dotnet\PropertyChanged.Fody.targets')" />
   <PropertyGroup>
-    <PostBuildEvent>if Release==$(ConfigurationName) cd $(ProjectDir) &amp;&amp; del Nuget\* /Q &amp;&amp; nuget pack $(ProjectName).csproj -OutputDirectory Nuget -Prop Configuration=Release -IncludeReferencedProjects &amp;&amp; xcopy "Nuget" "\\rafaelito\Kea_nugets\" /Y</PostBuildEvent>
+    <PostBuildEvent>if Release==$(ConfigurationName) cd $(ProjectDir) &amp;&amp; mkdir Nuget ||  del Nuget\* /Q &amp;&amp; nuget pack $(ProjectName).csproj -OutputDirectory Nuget -Prop Configuration=Release -IncludeReferencedProjects</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
