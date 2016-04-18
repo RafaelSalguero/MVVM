@@ -71,3 +71,22 @@ public class Dialogs : ViewLocator
     }
 }
 ```
+
+Then on a view model that need to open a window:
+```c#
+public class ClientListViewModel
+{  
+    public ClientListViewModel(IDialogs Dialogs)
+    {
+        this.Dialogs = Dialogs;
+    }
+    readonly IDialogs Dialogs;
+    
+    public Client Current { get; set; }
+    
+    public ICommand EditCurrent => new DelegateCommand(()=> {
+        var VM = new ClientEditViewModel(this.Current);
+        Dialogs.Show(VM);
+    });
+}
+```
