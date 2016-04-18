@@ -48,3 +48,23 @@ public Locator(string Name)
 The `PairLocator` class is an implementation of the `INameLocator` 
 interface that traverse all assembly types that follows the name convention, 
 but any other implementation of INameLocator that gets ViewModel instances by name will work with the ViewModelLocator
+
+##Tonic.MVVM.ViewLocator
+###Open a new window (MVVM way)
+
+The library provides the `IDialogs` interface that expose methods for opening windows for a given view model, in practice, this interface can be easily mocked for unit testing or design time view models.
+
+In production, one can inherit the `Tonic.MVVM.ViewLocator` class to add View-ViewModel pairs that will be used to decouple UI and window creation from ViewModel logic:
+
+```c#
+//This class implements IDialogs, view models that need to open windows can depend on the IDialogs interface
+public class Dialogs : ViewLocator
+{
+    public Dialogs()
+    {
+        //Add view-view model pairs here:
+        foreach (var Pair in ConventionLocator.Locate(typeof(Locator), typeof(Dummy)))
+            Add(Pair);
+    }
+}
+```
