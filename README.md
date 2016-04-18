@@ -9,12 +9,14 @@ is to get ViewModel instances given the name of the view model.
 The basic use is to inherit from the class and to have two `IServiceProvider` methods, one for design time dependencies and other for run time dependencies:
 
 ```c#
-//Design time dependencies, mostly mocks
+//Design time mocks
 public static IServiceProvider Designer()
 {
     var Kernel = new Ninject.StandardKernel();
     Kernel.Bind<Func<IDatabase>>().ToMethod<Func<IDatabase>>(x => () => new InMemoryDatabase(new MockContext()));
     Kernel.Bind<IDateTimeProvider>().ToConstant(new MockDateTime(new DateTime(2013, 05, 27)));
+    Kernel.Bind<IDialogs>().ToMethod(c => new ViewMock());
+
     return Kernel;
 }
 
@@ -24,7 +26,8 @@ public static IServiceProvider Runtime()
     var Kernel = new Ninject.StandardKernel();
     Kernel.Bind<Func<IDatabase>>().ToMethod<Func<IDatabase>>(x => () => new ContextDatabase(new Db()));
     Kernel.Bind<IDateTimeProvider>().ToConstant(new SystemDateTime());
-
+    Kernel.Bind<IDialogs>().ToMethod(c => new Dialogs());
+    
     return Kernel;
 }
 
@@ -63,7 +66,7 @@ public class Dialogs : ViewLocator
     public Dialogs()
     {
         //Add view-view model pairs here:
-        foreach (var Pair in ConventionLocator.Locate(typeof(Locator), typeof(Dummy)))
+        foreach (var Pair in ConventionLocator.Locate(typeof(Locator), typeof(ViewModel.Dummy)))
             Add(Pair);
     }
 }
