@@ -38,14 +38,23 @@ namespace Tonic.MVVM
         public Type View { get; private set; }
     }
 
+    /// <summary>
+    /// Pairs all view classes that ends with View with view model classes that ends with ViewModel
+    /// </summary>
     public static class ConventionLocator
     {
         private const string ViewPostfix = "View";
         private const string ViewModelPostfix = "ViewModel";
 
+        /// <summary>
+        /// Get a new family of pairs that follow the naming convention
+        /// </summary>
+        /// <param name="ViewAssemblyDummyType">Type at the root of the namespace of the views. Can be null if only view model names are needed</param>
+        /// <param name="ViewModelAssemblyDummyType">Type at the root of the namespace of the view models. Can be null if only view names are needed</param>
+        /// <returns></returns>
         public static IEnumerable<VVMPair> Locate(Type ViewAssemblyDummyType, Type ViewModelAssemblyDummyType)
         {
-            return Locate(ViewAssemblyDummyType.Assembly, ViewAssemblyDummyType.Namespace, ViewModelAssemblyDummyType.Assembly, ViewModelAssemblyDummyType.Namespace);
+            return Locate(ViewAssemblyDummyType?.Assembly, ViewAssemblyDummyType?.Namespace, ViewModelAssemblyDummyType?.Assembly, ViewModelAssemblyDummyType?.Namespace);
         }
 
         private static string GetName(string fullName, string ns, string post) => fullName.Substring(ns.Length + 1, fullName.Length - post.Length - ns.Length - 1);
@@ -53,14 +62,18 @@ namespace Tonic.MVVM
         /// <summary>
         /// Gets a new family of pairs that follow the naming convention
         /// </summary>
+        /// <param name="ViewModelNamespace">Root namespace of the view models</param>
+        /// <param name="ViewModels">Assembly to look for view models. Can be null if only view names are needed</param>
+        /// <param name="ViewNamespace">Root namespace of the views</param>
+        /// <param name="Views">Assembly to look for views. Can be null if only view model names are needed</param>
         public static IEnumerable<VVMPair> Locate(Assembly Views, string ViewNamespace, Assembly ViewModels, string ViewModelNamespace)
         {
 
 
-            var vTypes = Views.GetTypes().Where(x => x.FullName.StartsWith(ViewNamespace + ".") && x.FullName.EndsWith(ViewPostfix))
+            var vTypes = (Views?.GetTypes().Where(x => x.FullName.StartsWith(ViewNamespace + ".") && x.FullName.EndsWith(ViewPostfix)) ?? new Type[0])
                            .ToLookup(x => GetName(x.FullName, ViewNamespace, ViewPostfix));
 
-            var vmTypes = ViewModels.GetTypes().Where(x => x.FullName.StartsWith(ViewModelNamespace + ".") && x.FullName.EndsWith(ViewModelPostfix))
+            var vmTypes = (ViewModels?.GetTypes().Where(x => x.FullName.StartsWith(ViewModelNamespace + ".") && x.FullName.EndsWith(ViewModelPostfix)) ?? new Type[0])
                 .ToLookup(x => GetName(x.FullName, ViewModelNamespace, ViewModelPostfix));
 
             var ret = new List<VVMPair>();

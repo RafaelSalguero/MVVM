@@ -29,20 +29,20 @@ namespace Tonic.MVVM
         /// <summary>
         /// Create a view model locator from two dummy types folling the view view model naming convention
         /// </summary>
-        /// <param name="ViewAssemblyDummyType"></param>
-        /// <param name="ViewModelAssemblyDummyType"></param>
+        /// <param name="ViewAssemblyDummyType">Type at the root of the namespace of the views. Can be null if only view model names are needed</param>
+        /// <param name="ViewModelAssemblyDummyType">Type at the root of the namespace of the view models. Can be null if only view names are needed</param>
         /// <param name="DependencyContainer"></param>
         public PairLocator(Type ViewAssemblyDummyType, Type ViewModelAssemblyDummyType, IServiceProvider DependencyContainer)
-            : this(ViewAssemblyDummyType.Assembly, ViewAssemblyDummyType.Namespace, ViewModelAssemblyDummyType.Assembly, ViewModelAssemblyDummyType.Namespace, DependencyContainer)
+            : this(ViewAssemblyDummyType?.Assembly, ViewAssemblyDummyType?.Namespace, ViewModelAssemblyDummyType?.Assembly, ViewModelAssemblyDummyType?.Namespace, DependencyContainer)
         { }
 
         /// <summary>
         /// Create a view model locator from a view assembly and a view model assembly, both following naming convention
         /// </summary>
-        /// <param name="Views">View assembly</param>
-        /// <param name="ViewNamespace">View root namespace</param>
-        /// <param name="ViewModels">View model assembly</param>
-        /// <param name="ViewModelNamespace">View model root namespace</param>
+        /// <param name="ViewModelNamespace">Root namespace of the view models</param>
+        /// <param name="ViewModels">Assembly to look for view models. Can be null if only view names are needed</param>
+        /// <param name="ViewNamespace">Root namespace of the views</param>
+        /// <param name="Views">Assembly to look for views. Can be null if only view model names are needed</param>
         /// <param name="DependencyContainer">Dependency container for resolving view model instantiation</param>
         public PairLocator(Assembly Views, string ViewNamespace, Assembly ViewModels, string ViewModelNamespace, IServiceProvider DependencyContainer) : base(DependencyContainer)
         {
@@ -52,6 +52,10 @@ namespace Tonic.MVVM
         /// <summary>
         /// Add a new family of pairs that follow the naming convention
         /// </summary>
+        /// <param name="ViewModelNamespace">Root namespace of the view models</param>
+        /// <param name="ViewModels">Assembly to look for view models. Can be null if only view names are needed</param>
+        /// <param name="ViewNamespace">Root namespace of the views</param>
+        /// <param name="Views">Assembly to look for views. Can be null if only view model names are needed</param>
         public void AddByConvention(Assembly Views, string ViewNamespace, Assembly ViewModels, string ViewModelNamespace)
         {
             foreach (var VM in ConventionLocator.Locate(Views, ViewNamespace, ViewModels, ViewModelNamespace))

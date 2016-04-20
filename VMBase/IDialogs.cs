@@ -25,7 +25,7 @@ namespace Tonic.MVVM
     }
 
     /// <summary>
-    /// Simple mock of the IView interface
+    /// Simple mock of the IDialogs interface
     /// </summary>
     public class ViewMock : IDialogs
     {

@@ -65,7 +65,6 @@
   <ItemGroup>
     <Compile Include="Assembly.cs" />
     <Compile Include="Clipboard.cs" />
-    <Compile Include="Locator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
