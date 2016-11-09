@@ -26,7 +26,7 @@ namespace Tonic.UI
             DependencyPropertyChangedEventArgs e)
         {
             var window = d as Window;
-            if (window != null )
+            if (window != null && object.Equals(true, e.NewValue))
             {
                 window.Close();
             }

@@ -20,111 +20,194 @@ namespace Tonic.Excel.Printers
         /// </summary>
         /// <param name="Objects">Colección de objetos</param>
         /// <param name="Columns">Columnas a imprimir</param>
-        public TablePrinter(IEnumerable<object> Objects, IEnumerable<DataColumn> Columns)
+        /// <param name="autoFit">Establecer automaticamente el tamaño de las columnas</param>
+        /// <param name="freezeHeaders">Congelar la cabecera de la tabla</param>
+        /// <param name="printHeaders">Imprimir la cabecera</param>
+        /// <param name="headerFormat">Formato de la cabecera</param>
+        /// <param name="dataFormat">Formato de los datos</param>
+        /// <param name="cellFormatOverride">Función de formate condicional o null, 
+        /// si esta función devuelve un valor diferente de nulo se establece ese como 
+        /// el formato de la celda. Si la función es null sera ignorada</param>
+        public TablePrinter(
+            IEnumerable<object> Objects,
+            IEnumerable<DataColumn> Columns,
+            bool freezeHeaders,
+            bool autoFit,
+            bool printHeaders,
+            CellFormat headerFormat,
+            CellFormat dataFormat,
+            Func<object, CellFormat> cellFormatOverride
+            )
         {
-            this.Objects = Objects.ToList();
-            this.Columns = Columns.ToList();
-            this.time = this.Objects.Count * this.Columns.Count;
+            this.FreezeHeader = freezeHeaders;
+            this.AutoFit = autoFit;
+            this.PrintHeader = printHeaders;
+            this.DataFormat = dataFormat;
+            this.HeaderFormat = headerFormat;
+            this.CellFormatOverride = cellFormatOverride;
+
+            this.objects = Objects.ToList();
+            this.columns = Columns.ToList();
+            this.time = this.objects.Count * this.columns.Count;
             this.value = Data.ToGrid(Objects, Columns);
         }
 
         /// <summary>
         /// Crea un nuevo TablePrinter a partir de una colección de objetos, tomando la definición de las columnas automaticamente a partir de las propiedades del tipo T
         /// </summary>
-        public static TablePrinter Create<T>(IEnumerable<T> Data)
+        public static TablePrinter Create<T>(IEnumerable<T> data)
         {
-            return new TablePrinter(Data.Cast<object>(), DataColumn.FromData(Data));
+            return Create(data, true);
         }
 
         /// <summary>
         /// Crea un nuevo TablePrinter a partir de una colección de objetos, tomando la definición de las columnas automaticamente a partir de las propiedades del tipo T
         /// </summary>
-        public static TablePrinter Create<T>(IEnumerable<T> Data, bool FreezeHeader)
+        /// <param name="freezeHeader">True para congelar la cabecera de la tabla</param>
+        /// <param name="data">Datos de la tabla</param>
+        public static TablePrinter Create<T>(IEnumerable<T> data, bool freezeHeader)
         {
-            var ret = new TablePrinter(Data.Cast<object>(), DataColumn.FromData(Data));
-            ret.FreezeHeader = FreezeHeader;
-            return ret;
+            return Create(data, freezeHeader, null);
         }
 
         /// <summary>
         /// Crea un nuevo TablePrinter a partir de una colección de objetos, tomando la definición de las columnas automaticamente a partir de las propiedades del tipo T
         /// </summary>
-        public static TablePrinter Create<T>(IEnumerable<T> Data, bool FreezeHeader, Func<T, CellFormat> ConditionalFormat)
+        public static TablePrinter Create<T>(IEnumerable<T> data, bool freezeHeader, Func<T, CellFormat> conditionalFormat)
         {
-            var ret = new TablePrinter(Data.Cast<object>(), DataColumn.FromData(Data));
-            ret.FreezeHeader = FreezeHeader;
-            ret.CellFormatOverride = o => ConditionalFormat((T)o);
-            return ret;
+            return Create(data, freezeHeader, conditionalFormat, new string[0]);
         }
 
         /// <summary>
         /// Crea un nuevo TablePrinter a partir de una colección de objetos, tomando la definición de las columnas automaticamente a partir de las propiedades del tipo T
         /// </summary>
-        /// <param name="ExcludeColumns">Nombres de las propiedades de las columnas que se excluiran del reporte</param>
-        public static TablePrinter Create<T>(IEnumerable<T> Data, bool FreezeHeader, Func<T, CellFormat> ConditionalFormat, IEnumerable<string> ExcludeColumns)
+        /// <param name="excludeColumns">Nombres de las propiedades de las columnas que se excluiran del reporte</param>
+        /// <param name="freezeHeader">True para congelar la cabecera de la tabla</param>
+        /// <param name="cellFormatOverride">Formato condicional o null para no establecer ninguno</param>
+        /// <param name="data">Datos de latabla</param>
+        public static TablePrinter Create<T>(IEnumerable<T> data, bool freezeHeader, Func<T, CellFormat> cellFormatOverride, IEnumerable<string> excludeColumns)
+        {
+            return Create(data, freezeHeader, true, true, cellFormatOverride, excludeColumns);
+        }
+
+        /// <summary>
+        /// Crea un nuevo TablePrinter a partir de una colección de objetos, tomando la definición de las columnas automaticamente a partir de las propiedades del tipo T
+        /// </summary>
+        /// <param name="excludeColumns">Nombres de las propiedades de las columnas que se excluiran del reporte</param>
+        /// <param name="freezeHeader">True para congelar la cabecera de la tabla</param>
+        /// <param name="cellFormatOverride">Formato condicional o null para no establecer ninguno</param>
+        ///  /// <param name="autoFit">True para establecer automaticamente el ancho de las columnas</param>
+        /// <param name="printHeader">True para imprimir la cabecera de la tabla</param>
+        /// <param name="data">Datos de latabla</param>
+        public static TablePrinter Create<T>(IEnumerable<T> data, bool freezeHeader, bool autoFit, bool printHeader, Func<T, CellFormat> cellFormatOverride, IEnumerable<string> excludeColumns)
+        {
+            return Create(data, freezeHeader, autoFit, printHeader, CellFormat.Header, CellFormat.Data, cellFormatOverride, excludeColumns);
+        }
+
+        /// <summary>
+        /// Crea un nuevo TablePrinter a partir de una colección de objetos, tomando la definición de las columnas automaticamente a partir de las propiedades del tipo T
+        /// </summary>
+        /// <param name="excludeColumns">Nombres de las propiedades de las columnas que se excluiran del reporte</param>
+        /// <param name="freezeHeader">True para congelar la cabecera de la tabla</param>
+        /// <param name="cellFormatOverride">Formato condicional o null para no establecer ninguno</param>
+        /// <param name="autoFit">True para establecer automaticamente el ancho de las columnas</param>
+        /// <param name="printHeader">True para imprimir la cabecera de la tabla</param>
+        /// <param name="data">Datos de latabla</param>
+        /// <param name="headerFormat">Formato de la cabecera</param>
+        /// <param name="dataFormat">Formato de los datos de la tabla</param>
+        public static TablePrinter Create<T>(IEnumerable<T> data,
+            bool freezeHeader,
+            bool autoFit,
+            bool printHeader,
+            CellFormat headerFormat,
+            CellFormat dataFormat,
+            Func<T, CellFormat> cellFormatOverride,
+            IEnumerable<string> excludeColumns)
         {
             var Columns =
-                DataColumn.FromData(Data, Prop => !ExcludeColumns.Contains(Prop));
+                DataColumn.FromData(data, Prop => !excludeColumns.Contains(Prop));
 
-
-            var ret = new TablePrinter(Data.Cast<object>(), Columns);
-            ret.FreezeHeader = FreezeHeader;
-            ret.CellFormatOverride = o => ConditionalFormat((T)o);
+            var ret = new TablePrinter(data.Cast<object>(),
+                Columns,
+                freezeHeader,
+                autoFit,
+                printHeader,
+                headerFormat,
+                dataFormat,
+                o => cellFormatOverride((T)o));
             return ret;
         }
 
         /// <summary>
         /// Crea un nuevo TablePrinter a partir de una colección de objetos, tomando la definición de las columnas automaticamente a partir de las propiedades del tipo T
         /// </summary>
-        public static TablePrinter CreateHeaderless<T>(IEnumerable<T> Data)
+        public static TablePrinter CreateHeaderless<T>(IEnumerable<T> data)
         {
-            var ret = new TablePrinter(Data.Cast<object>(), DataColumn.FromData(Data));
-            ret.FreezeHeader = false;
-            ret.PrintHeader = false;
-            return ret;
+            return Create(data, true, true, false, null, new string[0]);
         }
 
-        int height;
-        int IPrinter.Height => this.Objects.Count + (PrintHeader ? 1 : 0);
-        int time;
-        int IPrinter.Time => time;
+        /// <summary>
+        /// Altura de la tabla
+        /// </summary>
+        public int Height => this.objects.Count + (PrintHeader ? 1 : 0);
+        /// <summary>
+        /// Cantidad de columnas
+        /// </summary>
+        public int Width => this.columns.Count;
+
+        readonly int time;
+        /// <summary>
+        /// Tiempo relativo
+        /// </summary>
+        public int Time => time;
 
 
-        IReadOnlyList<object> Objects { get; set; }
-        IReadOnlyList<DataColumn> Columns { get; set; }
+        readonly IReadOnlyList<object> objects;
+        readonly IReadOnlyList<DataColumn> columns;
 
         /// <summary>
         /// Formato de la primera fila que contiene los nombres de las columnas
         /// </summary>
-        public CellFormat HeaderFormat { get; set; } = new CellFormat { Background = Colors.Gold, Bold = true };
+        public readonly CellFormat HeaderFormat;
 
         /// <summary>
         /// Formato condicional de las celdas que contienen los datos. Se tomara en cuenta si no es nulo
         /// </summary>
-        public Func<object, CellFormat> CellFormatOverride { get; set; } = o => null;
+        public readonly Func<object, CellFormat> CellFormatOverride;
 
         /// <summary>
         /// Formato de las celdas que contienen los datos
         /// </summary>
-        public CellFormat DataFormat { get; set; } = new CellFormat { GreenBar = true };
+        public readonly CellFormat DataFormat;
 
         /// <summary>
         /// True para aplicar un autofit a las columnas impresas
         /// </summary>
-        public bool AutoFit { get; set; } = true;
+        public readonly bool AutoFit;
 
         /// <summary>
         /// True para congelar la cabecera
         /// </summary>
-        public bool FreezeHeader { get; set; } = true;
+        public readonly bool FreezeHeader;
 
         /// <summary>
         /// True para imprimir una cabezera
         /// </summary>
-        public bool PrintHeader { get; set; } = true;
+        public readonly bool PrintHeader;
 
+        /// <summary>
+        /// Valores de la tabla
+        /// </summary>
         readonly object[,] value;
-        async Task PrintContent(ExcelWorksheet ws, int startX, int startY, Action<double> ReportProgress)
+
+        /// <summary>
+        /// Imprime el contenido de la tabla
+        /// </summary>
+        /// <param name="ws"></param>
+        /// <param name="startX"></param>
+        /// <param name="startY"></param>
+        /// <param name="ReportProgress"></param>
+        void PrintContent(ExcelWorksheet ws, int startX, int startY, Action<double> ReportProgress)
         {
             //Establece el formato para todas las celdas:
             var allCellAddress = new ExcelAddress(startY + 1, startX + 1, startY + value.GetLength(0), startX + value.GetLength(1));
@@ -132,12 +215,10 @@ namespace Tonic.Excel.Printers
             var adr = allCellAddress.Address;
             DataFormat.LoadStyle(ws.Cells[allCellAddress.Address].Style, false);
 
-
-
             //Establece los formatos numericos para las celdas que tienen:
-            for (int i = 0; i < Columns.Count; i++)
+            for (int i = 0; i < columns.Count; i++)
             {
-                var C = Columns[i];
+                var C = columns[i];
                 if (C.Format != null)
                 {
                     var Cells = ws.Cells[startY + 1, startX + 1 + i, startY + value.GetLength(0), startX + 1 + i];
@@ -150,16 +231,13 @@ namespace Tonic.Excel.Printers
             var FormattedRows = new List<int>();
             for (int y = startY; y < startY + value.GetLength(0); y++)
             {
-                await Task.Run(() =>
+                for (int x = startX; x < startX + value.GetLength(1); x++)
                 {
-                    for (int x = startX; x < startX + value.GetLength(1); x++)
-                    {
-                        var cell = ws.Cells[y + 1, x + 1];
-                        cell.Value = value[y - startY, x - startX];
-                    }
-                });
+                    var cell = ws.Cells[y + 1, x + 1];
+                    cell.Value = value[y - startY, x - startX];
+                }
 
-                var Format = CellFormatOverride(this.Objects[y - startY]);
+                var Format = CellFormatOverride(this.objects[y - startY]);
                 if (Format != null)
                 {
                     var row = new ExcelAddress(y + 1, startX + 1, y + 1, startX + value.GetLength(1));
@@ -186,34 +264,41 @@ namespace Tonic.Excel.Printers
         }
 
 
-        async Task IPrinter.Print(ExcelWorksheet ws, int StartX, int StartY, Action<double> ReportProgress)
+        /// <summary>
+        /// Imprime la tabla
+        /// </summary>
+        /// <param name="ws"></param>
+        /// <param name="StartX"></param>
+        /// <param name="StartY"></param>
+        /// <param name="ReportProgress"></param>
+        public void Print(ExcelWorksheet ws, int StartX, int StartY, Action<double> ReportProgress)
         {
             if (FreezeHeader)
             {
                 ws.View.FreezePanes(2 + StartY, StartX + 1);
             }
 
-            var cols = Columns.ToArray();
+            var cols = columns.ToArray();
 
-            var GridData = Data.ToGrid(Objects, cols);
+            var GridData = Data.ToGrid(objects, cols);
             //var Data = Kea.GridData.Data.ToGrid(Objects, Columns);
             if (PrintHeader)
             {
-                IPrinter HeaderPrinter = GridPrinter.Row(Columns.Select(x => x.FriendlyName), HeaderFormat);
-                await HeaderPrinter.Print(ws, StartX, StartY, x => { });
+                IPrinter HeaderPrinter = GridPrinter.Row(columns.Select(x => x.FriendlyName), HeaderFormat);
+                HeaderPrinter.Print(ws, StartX, StartY, x => { });
                 StartY++;
             }
 
-            await PrintContent(ws, StartX, StartY, x => ReportProgress(x * 1 / 2.0));
+            PrintContent(ws, StartX, StartY, x => ReportProgress(x * 1 / 2.0));
 
             //Fit columns:
             if (AutoFit)
             {
-                for (int x = StartX; x < StartX + Columns.Count; x++)
+                for (int x = StartX; x < StartX + columns.Count; x++)
                 {
-                    await Task.Run(() => ws.Column(x + 1).AutoFit());
+                    ws.Column(x + 1).AutoFit();
 
-                    var prog = (x - StartX) / (double)(Columns.Count);
+                    var prog = (x - StartX) / (double)(columns.Count);
 
                     if (x % 5 == 0)
                         ReportProgress((prog + 1.0) / 2.0);

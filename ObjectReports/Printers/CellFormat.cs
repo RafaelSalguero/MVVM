@@ -14,29 +14,67 @@ namespace Tonic.Excel.Printers
     public class CellFormat
     {
         /// <summary>
+        /// Crea un nuevo formato de celda
+        /// </summary>
+        /// <param name="foreground">Color de fuente</param>
+        /// <param name="background">Color de fondo</param>
+        /// <param name="bold">negritas</param>
+        /// <param name="greenBar">Efecto green bar</param>
+        /// <param name="numberFormat">Formato de celda</param>
+        public CellFormat(
+            Color foreground,
+            Color background,
+            bool bold,
+            bool greenBar,
+            string numberFormat
+            )
+        {
+            this.Foreground = foreground;
+            this.Background = background;
+            this.Bold = bold;
+            this.GreenBar = greenBar;
+            this.NumberFormat = numberFormat;
+        }
+
+        /// <summary>
+        /// CellFormat defalt
+        /// </summary>
+        public static readonly CellFormat Default = new CellFormat(Colors.Black, Colors.Transparent, false, false, null);
+
+        /// <summary>
+        /// CellFormat con green bar
+        /// </summary>
+        public static readonly CellFormat Data = new CellFormat(Colors.Black, Colors.Transparent, false, true, null);
+
+        /// <summary>
+        /// Cabecera
+        /// </summary>
+        public static readonly CellFormat Header = new CellFormat(Colors.Black, Colors.Gold, true, true, null);
+
+        /// <summary>
         /// Color de fondo
         /// </summary>
-        public Color Background { get; set; } = Colors.Transparent;
+        public Color Background { get; private set; } = Colors.Transparent;
 
         /// <summary>
         /// Color de fuente
         /// </summary>
-        public Color Foreground { get; set; } = Colors.Black;
+        public Color Foreground { get; private set; } = Colors.Black;
 
         /// <summary>
         /// Negritas
         /// </summary>
-        public bool Bold { get; set; }
+        public bool Bold { get; private set; }
 
         /// <summary>
         /// Oscurecer la celdas impares
         /// </summary>
-        public bool GreenBar { get; set; }
+        public bool GreenBar { get; private set; }
 
         /// <summary>
         /// Formato de la celda
         /// </summary>
-        public string NumberFormat { get; set; }
+        public string NumberFormat { get; private set; }
 
         internal static System.Drawing.Color FromColor(Color C)
         {

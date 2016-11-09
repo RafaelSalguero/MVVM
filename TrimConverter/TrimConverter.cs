@@ -15,7 +15,7 @@ namespace Tonic.UI
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value.ToString().Trim();
+            return value?.ToString()?.Trim();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

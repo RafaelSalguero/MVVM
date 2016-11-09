@@ -45,7 +45,7 @@ namespace Tonic.Excel.Printers
         /// <param name="Value">The data to convert to an excel report</param>
         public static GridPrinter Grid<T>(IEnumerable<T> Data)
         {
-            return Grid(Data, new CellFormat());
+            return Grid(Data, CellFormat.Default);
         }
 
         /// <summary>
@@ -109,7 +109,10 @@ namespace Tonic.Excel.Printers
         readonly bool firstGreenBar;
 
 
-        int IPrinter.Height
+        /// <summary>
+        /// Alto de la tabla
+        /// </summary>
+        public int Height
         {
             get
             {
@@ -117,7 +120,21 @@ namespace Tonic.Excel.Printers
             }
         }
 
-        int IPrinter.Time
+        /// <summary>
+        /// Ancho de la tabla
+        /// </summary>
+        public int Width
+        {
+            get
+            {
+                return value.GetLength(1);
+            }
+        }
+
+        /// <summary>
+        /// Tiempo relativo estimado
+        /// </summary>
+        public int Time
         {
             get
             {
@@ -125,7 +142,14 @@ namespace Tonic.Excel.Printers
             }
         }
 
-        async Task IPrinter.Print(ExcelWorksheet ws, int startX, int startY, Action<double> Progress)
+        /// <summary>
+        /// Imprime este grid
+        /// </summary>
+        /// <param name="ws">Hoja donde se va a imprimir</param>
+        /// <param name="startX">Inicio horizontal basado en 0</param>
+        /// <param name="startY">Inicio vertical basado en 0</param>
+        /// <param name="Progress">Reporta el progreso de la impresión</param>
+        public void Print(ExcelWorksheet ws, int startX, int startY, Action<double> Progress)
         {
             bool gb = firstGreenBar;
 
@@ -134,14 +158,11 @@ namespace Tonic.Excel.Printers
 
             for (int y = startY; y < startY + value.GetLength(0); y++)
             {
-                await Task.Run(() =>
-              {
-                  for (int x = startX; x < startX + value.GetLength(1); x++)
-                  {
-                      var cell = ws.Cells[y + 1, x + 1];
-                      cell.Value = value[y - startY, x - startX];
-                  }
-              });
+                for (int x = startX; x < startX + value.GetLength(1); x++)
+                {
+                    var cell = ws.Cells[y + 1, x + 1];
+                    cell.Value = value[y - startY, x - startX];
+                }
 
                 if (y % 50 == 0)
                     Progress((y - startY) / (double)value.GetLength(0));

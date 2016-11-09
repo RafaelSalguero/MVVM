@@ -26,14 +26,12 @@ namespace Tonic.Excel
     /// </summary>
     public static class Export
     {
-
-
         /// <summary>
         /// Exporta un objeto IPrinter a un arreglo de bytes que contiene un archivo xlsx de excel
         /// </summary>
         /// <param name="Title">Titulo del archivo</param>
         /// <param name="Printer">Printer</param>
-        public static async Task<byte[]> SingleSheetExport(string Title, IPrinter Printer, Action<double> ReportProgress)
+        public static byte[] SingleSheetExport(string Title, IPrinter Printer, Action<double> ReportProgress)
         {
             using (var p = new ExcelPackage())
             {
@@ -42,7 +40,7 @@ namespace Tonic.Excel
                 p.Workbook.Worksheets.Add(Title);
                 var ws = p.Workbook.Worksheets[1];
 
-                await Printer.Print(ws, 0, 0, ReportProgress);
+                Printer.Print(ws, 0, 0, ReportProgress);
 
                 var ret = p.GetAsByteArray();
 
@@ -52,7 +50,7 @@ namespace Tonic.Excel
         /// <summary>
         /// Exporta un conjunto de IPrinters como un documento de excel de varias hojas
         /// </summary>
-        public static async Task<byte[]> MultiSheetExport(string Title, IEnumerable<WorksheetData> Worksheets, Action<double> ReportProgress)
+        public static byte[] MultiSheetExport(string Title, IEnumerable<WorksheetData> Worksheets, Action<double> ReportProgress)
         {
             int Time = Worksheets.Sum(x => x.Printer.Time);
             var Prog = new Progress<double>(ReportProgress).Child(0, Time);
@@ -69,8 +67,8 @@ namespace Tonic.Excel
                   
                     var ws = p.Workbook.Worksheets.Add(W.Title);
 
-                    await W.Printer.Print(ws, 0, 0, ChildProgress);
-                   
+                    W.Printer.Print(ws, 0, 0, ChildProgress);
+
                     progressAcum += W.Printer.Time;
                 }
 

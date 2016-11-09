@@ -33,6 +33,8 @@ namespace Kea.PDF
                 return ((dynamic)Value).ToString(Format);
         }
 
+
+     
         public static double[] GetTableWidths(string[] headers, string[,] data, Font Font)
         {
             var T = new TextMeasurement(Font);

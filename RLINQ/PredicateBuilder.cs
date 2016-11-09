@@ -152,7 +152,7 @@ namespace Tonic
         }
 
         /// <summary>
-        /// Returns an expression that test each property equality to a given value. The given predicate can be used with the RLinq.Where method
+        /// Returns an expression that test each property equality to a given value. The given predicate can be used with the native Where method
         /// </summary>
         /// <returns></returns>
         public static Expression<Func<T, bool>> PredicateEqual<T>(IEnumerable<Tuple<string, object>> PropertyValues)

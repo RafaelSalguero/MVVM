@@ -19,21 +19,26 @@ namespace Tonic.Excel.Printers
         {
             this.printers = Printers.ToList();
             this.rows = Printers.Sum(x => x.Height);
+            this.cols = Printers.Max(x => x.Width);
             this.time = Printers.Sum(x => x.Time);
         }
         private readonly IReadOnlyList<IPrinter> printers;
 
-        int rows;
-        int IPrinter.Height
-        {
-            get
-            {
-                return rows;
-            }
-        }
-
+        readonly int rows;
+        readonly int cols;
+        /// <summary>
+        /// Suma de las alturas de los objetos
+        /// </summary>
+        public int Height => rows;
+        /// <summary>
+        /// Ancho máximo de los objetos
+        /// </summary>
+        public int Width => cols;
         int time;
-        int IPrinter.Time
+        /// <summary>
+        /// Tiempo relativo de impresión
+        /// </summary>
+        public int Time
         {
             get
             {
@@ -41,10 +46,16 @@ namespace Tonic.Excel.Printers
             }
         }
 
-        async Task IPrinter.Print(ExcelWorksheet ws, int startX, int startY, Action<double> ReportProgress)
+        /// <summary>
+        /// Realiza la impresión
+        /// </summary>
+        /// <param name="ws"></param>
+        /// <param name="startX"></param>
+        /// <param name="startY"></param>
+        /// <param name="ReportProgress"></param>
+        public void Print(ExcelWorksheet ws, int startX, int startY, Action<double> ReportProgress)
         {
             //Obtiene todas las instrucciones de impresion:
-            var Instructions = new List<PrinterInstruction>();
             int y = startY;
 
             var Prog = new Progress<double>(ReportProgress).Child(time);
@@ -54,7 +65,7 @@ namespace Tonic.Excel.Printers
                 var ChildProg = Prog.Child(1);
                 Action<double> ChildProgress = x => ChildProg.Report(x * P.Time);
 
-                await P.Print(ws, startX, y, ChildProgress);
+                P.Print(ws, startX, y, ChildProgress);
                 y += P.Height;
             }
 
