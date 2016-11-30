@@ -45,7 +45,7 @@ namespace Tonic.Excel
                 var ret = p.GetAsByteArray();
 
                 return ret;
-            }
+           } 
         }
         /// <summary>
         /// Exporta un conjunto de IPrinters como un documento de excel de varias hojas

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Tonic
 {
+    /// <summary>
+    /// Type extensions
+    /// </summary>
     public static class TypeExtensions
     {
 
@@ -60,6 +63,7 @@ namespace Tonic
 
             return false;
         }
+
 
         private static Type GetFullTypeDefinition(Type type)
         {

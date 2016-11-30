@@ -25,7 +25,7 @@ namespace Tonic.Excel.Printers
         /// <param name="printHeaders">Imprimir la cabecera</param>
         /// <param name="headerFormat">Formato de la cabecera</param>
         /// <param name="dataFormat">Formato de los datos</param>
-        /// <param name="cellFormatOverride">Función de formate condicional o null, 
+        /// <param name="cellFormatOverride">Función de formate condicional, 
         /// si esta función devuelve un valor diferente de nulo se establece ese como 
         /// el formato de la celda. Si la función es null sera ignorada</param>
         public TablePrinter(
@@ -126,6 +126,9 @@ namespace Tonic.Excel.Printers
         {
             var Columns =
                 DataColumn.FromData(data, Prop => !excludeColumns.Contains(Prop));
+
+            if (cellFormatOverride == null)
+                cellFormatOverride = o => null;
 
             var ret = new TablePrinter(data.Cast<object>(),
                 Columns,

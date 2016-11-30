@@ -276,7 +276,6 @@ namespace Tonic
             return IEnumerable.GetGenericArguments()[0];
         }
 
-
         /// <summary>
         /// Calls a given static method 
         /// </summary>
@@ -406,9 +405,6 @@ namespace Tonic
         {
             return CallStatic(Query, x => x.First());
         }
-
-
-
 
         /// <summary>
         /// Calls the where LINQ method via reflection

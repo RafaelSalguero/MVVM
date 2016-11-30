@@ -8,7 +8,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Tonic;
 namespace Kea.GridData
 {
     /// <summary>
@@ -172,7 +171,7 @@ namespace Kea.GridData
             if (Type.IsSubClassOfGeneric(typeof(IReadOnlyList<>)))
             {
                 //Access by the indexer property:
-                var ElementType = RLinq.GetEnumerableType(Type);
+                var ElementType = Kea.ReflectionLinq.GetEnumerableType(Type);
                 var Interface = typeof(IReadOnlyList<>).MakeGenericType(ElementType);
                 var PropertyIndexer = Interface.GetProperties().Where(x => x.GetIndexParameters().Length > 0).Single();
 
@@ -213,8 +212,8 @@ namespace Kea.GridData
         /// <returns></returns>
         public static IEnumerable<DataColumn> FromData(IEnumerable Collection, Func<string, bool> Predicate)
         {
-            var Type = RLinq.GetEnumerableType(Collection);
-            var FirstRow = RLinq.CallStatic(Collection, x => x.FirstOrDefault());
+            var Type = Kea.ReflectionLinq.GetEnumerableType(Collection);
+            var FirstRow = Kea.ReflectionLinq.CallStatic(Collection, x => x.FirstOrDefault());
 
             var Properties = Type.GetProperties().Where(x => x.GetCustomAttribute<IgnoreAttribute>() == null);
 
@@ -228,7 +227,7 @@ namespace Kea.GridData
                     if (FirstRow != null)
                     {
                         var Data = (IEnumerable)P.GetValue(FirstRow);
-                        var ElementType = RLinq.GetEnumerableType(P.PropertyType);
+                        var ElementType = Kea.ReflectionLinq.GetEnumerableType(P.PropertyType);
                         var Getter = GetIndexer(P.PropertyType);
 
                         int i = 0;
