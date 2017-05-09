@@ -63,6 +63,7 @@
     <Compile Include="Printers\GridPrinter.cs" />
     <Compile Include="Printers\IPrinter.cs" />
     <Compile Include="Printers\MultiPrinter.cs" />
+    <Compile Include="Printers\OffsetPrinter.cs" />
     <Compile Include="Printers\PropertyPrinter.cs" />
     <Compile Include="Printers\SpacePrinter.cs" />
     <Compile Include="Printers\StackPrinter.cs" />
